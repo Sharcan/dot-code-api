@@ -1,42 +1,66 @@
 import { Logger } from '@nestjs/common';
 import {
+  ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
-  WebSocketServer
+  WebSocketServer,
 } from '@nestjs/websockets';
-import { Socket } from 'dgram';
-import { Server } from 'http';
+import { Socket, Server } from 'socket.io';
 
 @WebSocketGateway()
-export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
-
+export class EventGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer() server: Server;
+  public users: Array<string> = [];
   private logger: Logger = new Logger('AppGateway');
 
-  @SubscribeMessage('msgToServer')
-  public handleMessage(client: any, payload: any): void {
-    this.server.emit('msgToClient', payload);
-    this.logger.log('Je suis un message du front');
+  @SubscribeMessage('newUserRemote')
+  public onNewUser(@ConnectedSocket() client: Socket, @MessageBody() newUser) {
+    client.broadcast.emit('newUserRemote', newUser);
   }
 
-  @SubscribeMessage('monaco-ide-changes')
-  public handleMonacoChanges(@MessageBody() message): void {
-    this.server.emit('monacoChangesToOther', message);
+  @SubscribeMessage('localCursorChange')
+  public onLocalCursorChange(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() values,
+  ) {
+    client.broadcast.emit('remoteCursorChange', values);
   }
 
+  @SubscribeMessage('monacoPage')
+  public onArriveOnMonacoPage(@ConnectedSocket() client: Socket) {
+    console.log('je passe ici', client.id);
+    client.emit('newUserLocal', {
+      socketId: client.id,
+      otherUsers: this.users.length > 0 ? this.users : [],
+    });
+    this.users.push(client.id);
+  }
+
+  /**
+   * @param server
+   */
   public afterInit(server: Server) {
     this.logger.log('Init');
   }
 
-  public handleConnection(client: Socket, ...args: any[]) {
-    this.logger.log(`Client connected: ${client}`);
+  /**
+   * @param client
+   */
+  public handleConnection(@ConnectedSocket() client: Socket) {
+    this.logger.log(client);
   }
-  
-  public handleDisconnect(client: Socket) {
-    this.logger.log(`Client disconnected: ${client}`);
+
+  /**
+   * @param client
+   */
+  public handleDisconnect(@ConnectedSocket() client: Socket) {
+    client.broadcast.emit('disconnected', client.id);
+    this.users.findIndex((value: string) => value === client.id);
   }
 }
