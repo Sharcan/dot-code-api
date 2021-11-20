@@ -10,17 +10,19 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
+import { UserModel } from './user.model';
 
 @WebSocketGateway()
 export class EventGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   @WebSocketServer() server: Server;
-  public users: Array<string> = [];
+  public users: Array<UserModel> = [];
   private logger: Logger = new Logger('AppGateway');
 
   @SubscribeMessage('newUserRemote')
-  public onNewUser(@ConnectedSocket() client: Socket, @MessageBody() newUser) {
+  public onNewUser(@ConnectedSocket() client: Socket, @MessageBody() newUser: UserModel) {
+    this.users.push(newUser);
     client.broadcast.emit('newUserRemote', newUser);
   }
 
@@ -34,12 +36,10 @@ export class EventGateway
 
   @SubscribeMessage('monacoPage')
   public onArriveOnMonacoPage(@ConnectedSocket() client: Socket) {
-    console.log('je passe ici', client.id);
     client.emit('newUserLocal', {
       socketId: client.id,
       otherUsers: this.users.length > 0 ? this.users : [],
     });
-    this.users.push(client.id);
   }
 
   /**
@@ -61,6 +61,6 @@ export class EventGateway
    */
   public handleDisconnect(@ConnectedSocket() client: Socket) {
     client.broadcast.emit('disconnected', client.id);
-    this.users.findIndex((value: string) => value === client.id);
+    this.users.findIndex((value: UserModel) => value.socketId === client.id);
   }
 }
