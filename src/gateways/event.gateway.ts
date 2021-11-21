@@ -42,6 +42,22 @@ export class EventGateway
     });
   }
 
+  @SubscribeMessage('newTextInsert')
+  public onTextInsert(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() values,
+  ) {
+    client.broadcast.emit('newTextInsertRemote', values);
+  }
+
+  @SubscribeMessage('newTextDelete')
+  public onTextDelete(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() values,
+  ) {
+    client.broadcast.emit('newTextDeleteRemote', values);
+  }
+
   /**
    * @param server
    */
