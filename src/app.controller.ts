@@ -3,6 +3,7 @@ import { AppService } from './app.service';
 import * as fs from 'fs';
 import {v4 as uuidv4} from 'uuid';
 import { execSync } from 'child_process';
+import {jest} from '@jest/globals';
 
 @Controller()
 export class AppController {
@@ -41,7 +42,12 @@ export class AppController {
     let filePath: string = 'uploads/temp/' + fileName;
     fs.appendFileSync(filePath, body.code);
 
-    const result = execSync(`${executable} ${filePath} ?>&1`).toString();
+    let result = '';
+    try {
+      result = execSync(`${executable} ${filePath} ?>&1`).toString();
+    } catch(err) {
+      result = err.stderr.toString();
+    }
     fs.unlinkSync(filePath);
 
     return result;
