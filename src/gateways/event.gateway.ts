@@ -8,7 +8,7 @@ import {
   WebSocketGateway,
   WebSocketServer
 } from '@nestjs/websockets';
-import { Socket } from 'dgram';
+import { Socket } from 'socket.io';
 import { Server } from 'http';
 
 @WebSocketGateway()
@@ -22,7 +22,6 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   public newRoom(@ConnectedSocket() client: Socket) {
 
   }
-
 
   /**
    * Envoie des sockets
