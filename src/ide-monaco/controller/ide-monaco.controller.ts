@@ -1,4 +1,5 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Param, Post } from '@nestjs/common';
 
 @Controller('ide-monaco')
-export class IdeMonacoController {}
+export class IdeMonacoController {
+}
