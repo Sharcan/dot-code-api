@@ -1,10 +1,8 @@
 import { Logger } from '@nestjs/common';
 import {
-  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
-  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer
 } from '@nestjs/websockets';
@@ -16,17 +14,6 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('AppGateway');
-
-  @SubscribeMessage('msgToServer')
-  public handleMessage(client: any, payload: any): void {
-    this.server.emit('msgToClient', payload);
-    this.logger.log('Je suis un message du front');
-  }
-
-  @SubscribeMessage('monaco-ide-changes')
-  public handleMonacoChanges(@MessageBody() message): void {
-    this.server.emit('monacoChangesToOther', message);
-  }
 
   public afterInit(server: Server) {
     this.logger.log('Init');
