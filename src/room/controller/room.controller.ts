@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Post } from '@nestjs/common';
-import { Room } from 'src/gateways/classes/room';
+import { Room } from 'src/room/classes/room';
 
 @Controller('room')
 export class RoomController {
@@ -35,7 +35,7 @@ export class RoomController {
 
         // TODO : Envoyer socket de création de room et d'ajout de l'utilisateur dans la room
         // TODO : Retourner json comme quoi j'ai créé une room
-        return { message: 'Room créée', pin: room.pin}
+        return { message: 'Room créée', pin: room.pin }
     }
 
     /**
