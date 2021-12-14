@@ -1,6 +1,6 @@
-import { Controller, Get, Param, Post } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { Room } from 'src/room/classes/room';
-
+import { TeamEnum } from '../enums/team.enum';
 @Controller('room')
 export class RoomController {
 
@@ -12,7 +12,6 @@ export class RoomController {
      * 
      * @returns json
      */
-    @Post()
     public createRoom() {
 
         let roomExist: boolean = false;
@@ -21,7 +20,7 @@ export class RoomController {
         do {
             // on génère un nouveau PIN
             newPin = this.__getNewPin();
-            
+
             // on check si le pin existe déjà
             this.rooms.forEach((key: Room) => {
                 roomExist = this._checkIfRoomExist(newPin, key.pin)
@@ -32,7 +31,7 @@ export class RoomController {
         // Création d'une nouvelle Room
         const room = new Room(newPin);
         this.rooms.push(room);
-
+        
         // TODO : Envoyer socket de création de room et d'ajout de l'utilisateur dans la room
         // TODO : Retourner json comme quoi j'ai créé une room
         return { message: 'Room créée', pin: room.pin }
@@ -44,23 +43,46 @@ export class RoomController {
      * @param pin 
      * @returns json
      */
-    @Post(':pin')
-    public connectToRoom(@Param('pin') pin: string) {
+    public connectToRoom(pin: string, socketId: string) {
+
+        const room = this._searchRoom(pin);
         
+        if (!room) {
+            return  { error: 'Room non trouvé' };
+        }
+
+        return { message: 'Room trouvée', pin: room.pin};
+    }
+
+
+    public joinTeam(socketId: string, pin: string, username: string, team: string) {
+        const room = this._searchRoom(pin);
+
+        if (!room) {
+            return  { error: 'Room non trouvé' };
+        }
+
+        room.addNewUser({socketId, username}, team)
+
+        console.log(room);
+    }
+
+
+    /**
+     * Rechercher si une room existe
+     * 
+     * @param pin 
+     * @returns 
+     */
+    private _searchRoom(pin: string): Room | null {
         let roomExist: Room;
 
         this.rooms.forEach((room: Room, index: number) => {
             roomExist = this._checkIfRoomExist(pin, room.pin) ? this.rooms[index] 
                 : null;
         });
-        
-        if (!roomExist) {
-            return  { error: 'Room non trouvé'};
-        }
 
-        // TODO: Envoyer socket d'ajout de l'utilisateur dans la room.
-        // TODO : Retourner json comme quoi j'ai rejoins une room
-        return { message: 'Room trouvée', pin: roomExist.pin};
+        return roomExist;
     }
 
     /**

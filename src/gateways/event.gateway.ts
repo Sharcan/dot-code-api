@@ -6,22 +6,48 @@ import {
   OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
-  WebSocketServer
+  WebSocketServer,
+  MessageBody
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { Server } from 'http';
+import { RoomController } from 'src/room/controller/room.controller';
 
 @WebSocketGateway()
 export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
+  public roomController: RoomController = new RoomController();
+
+  /** Reception des sockets */
 
   /**
-   * Reception des sockets
+   * A la création d'une nouvelle room
+   * 
+   * @param client 
+   * @returns 
    */
-  @SubscribeMessage('newRoom')
-  public newRoom(@ConnectedSocket() client: Socket) {
-
+  @SubscribeMessage('newRoomCreation')
+  public newRoomCreation(@ConnectedSocket() client: Socket) {
+    return this.roomController.createRoom();
   }
+
+  /**
+   * A la connexion à une room
+   * 
+   * @param client 
+   * @param body 
+   * @returns 
+   */
+   @SubscribeMessage('roomConnection')
+   public roomConnection(@ConnectedSocket() client: Socket, @MessageBody() body) {
+     return this.roomController.connectToRoom(body.pin, client.id);
+   }
+
+   @SubscribeMessage('newUser')
+   public newUser(@ConnectedSocket() client: Socket, @MessageBody() body) {
+     this.roomController.joinTeam(client.id, body.pin, body.username, body.team);
+   }
+
 
   /**
    * Envoie des sockets

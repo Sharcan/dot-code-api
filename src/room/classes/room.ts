@@ -6,15 +6,13 @@ export class Room {
     /**
      * Variables
      */
-    public equipe_1: UserModel[];
-    public equipe_2: UserModel[];
+    public equipe_1: UserModel[] = [];
+    public equipe_2: UserModel[] = [];
     
-
     public constructor(
         public pin: string
     ) {
     }
-
 
     /**
      * Ajouter un utilisateur dans une équipe
@@ -22,7 +20,7 @@ export class Room {
      * @param user 
      * @param team 
      */
-    public addNewUser(user: UserModel, team: TeamEnum) {
+    public addNewUser(user: UserModel, team: string) {
         if (user && team) {
             team === TeamEnum.TEAM_1 ? this.equipe_1.push(user)
                 : this.equipe_2.push(user);
