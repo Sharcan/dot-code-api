@@ -51,7 +51,7 @@ export class RoomController {
             return  { error: 'Room non trouvé' };
         }
 
-        return { message: 'Room trouvée', pin: room.pin};
+        return { message: 'Room trouvée', pin: room.pin };
     }
 
 
@@ -63,8 +63,8 @@ export class RoomController {
         }
 
         room.addNewUser({socketId, username}, team)
-
-        console.log(room);
+        
+        return { message: 'Utilisateur ajouté', pin: room.pin }
     }
 
 

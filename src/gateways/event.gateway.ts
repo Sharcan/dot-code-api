@@ -40,12 +40,15 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
    */
    @SubscribeMessage('roomConnection')
    public roomConnection(@ConnectedSocket() client: Socket, @MessageBody() body) {
-     return this.roomController.connectToRoom(body.pin, client.id);
+    return this.roomController.connectToRoom(body.pin, client.id);
    }
 
    @SubscribeMessage('newUser')
    public newUser(@ConnectedSocket() client: Socket, @MessageBody() body) {
-     this.roomController.joinTeam(client.id, body.pin, body.username, body.team);
+     const response = this.roomController.joinTeam(client.id, body.pin, body.username, body.team);
+     client.join(response.pin);
+     client.to(response.pin).emit('newUser', {username: body.username})
+     return response;
    }
 
 
