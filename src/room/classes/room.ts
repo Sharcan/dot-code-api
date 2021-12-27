@@ -25,7 +25,6 @@ export class Room {
             team === TeamEnum.TEAM_1 ? this.equipe_1.push(user)
                 : this.equipe_2.push(user);
         }
-        console.log('teams:', this.equipe_1, this.equipe_2);
     }
 
     /**

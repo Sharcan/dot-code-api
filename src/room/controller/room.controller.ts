@@ -65,14 +65,11 @@ export class RoomController {
      * @returns 
      */
     public joinTeam(socketId: string, pin: string, username: string, team: string) {
-        console.log('je cherche la room : ', pin);
         const room = this._searchRoomOther(pin);
         if (!room) {
-            console.log('ici jai pas trouvé la room');
             return  { error: 'Room non trouvé' };
         }
-
-        console.log('room trouvée:', room);
+        
         room.addNewUser({socketId, username}, team)
 
         return {message: `L'utilisateur a bien été ajouté à la team`, username: username, socketId: socketId};
