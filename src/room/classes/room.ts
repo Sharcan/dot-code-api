@@ -25,7 +25,33 @@ export class Room {
             team === TeamEnum.TEAM_1 ? this.equipe_1.push(user)
                 : this.equipe_2.push(user);
         }
+        console.log('teams:', this.equipe_1, this.equipe_2);
     }
+
+    /**
+     * Retirer un utilisateur d'une équipe inconnue
+     * 
+     * @param user 
+     * @returns 
+     */
+    public removeUserFromUnknownTeam(user: UserModel) {
+        let userIndex: number;
+
+        userIndex = this.equipe_1.findIndex((userToFind: UserModel) => userToFind.socketId === user.socketId);
+        if (userIndex !== -1) {
+            this.equipe_1.splice(userIndex, 1);
+            return {message: `Utilisateur retiré de l'équipe 1`, pin: this.pin};
+        }
+
+        userIndex = this.equipe_2.findIndex((userToFind: UserModel) => userToFind.socketId === user.socketId);
+        if (userIndex !== -1) {
+            this.equipe_2.splice(userIndex, 1);
+            return {message: `Utilisateur retiré de l'équipe 2`, pin: this.pin};
+        }
+
+        return {error: 'Utilisateur non trouvé dans cette room'};
+    }
+
 
     /**
      * Retirer un utilisateur d'une équipe
