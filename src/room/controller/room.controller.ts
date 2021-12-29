@@ -51,7 +51,7 @@ export class RoomController {
             return  { error: 'Room non trouvé' };
         }
 
-        return { message: 'Room trouvée', pin: room.pin};
+        return { message: 'Room trouvée', pin: room.pin };
     }
 
 
