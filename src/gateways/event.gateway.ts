@@ -76,12 +76,15 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
    public newUser(@ConnectedSocket() client: Socket, @MessageBody() body) {
      const response = this.roomController.joinTeam(client.id, body.pin, body.username, body.team);
      if (response.message) {
+        // On connecte l'utilisateur à la room
+        client.join(response.pin);
         this.usersConnectedToARoom.forEach((user: {socketId: string, pin: string, username?: string}) => {
           if (user.socketId === client.id) {
             user.username = response.username;
           }
         });
      }
+     console.log(this.roomController.rooms);
    }
 
 
@@ -105,11 +108,12 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     this.logger.log(`Client connected: ${client}`);
   }
   
+  /**
+   * Lorsqu'un utilisateur quitte la room on le supprime de la team
+   * 
+   * @param client 
+   */
   public handleDisconnect(client: Socket) {
-    // TODO : Si le client se deconnecte, il faut recupérer la room sur laquel il été connecté
-    // TODO : puis le supprimer de la bonne TEAM
-    // TODO : envoyer une requete à l'ensemble de la room qu'il a quitter la partie.
-
     const userFound = this.usersConnectedToARoom.find((user: {socketId: string, pin: string}) => user.socketId === client.id);
     if (userFound) {
       const response: {message?: string, error?: string, pin?: string} = this.roomController.leaveTeam(userFound.pin, userFound.socketId, userFound.username);
@@ -118,5 +122,6 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         client.to(response.pin).emit('userHasDisconnected', 'An user has disconnected');
       }
     }
+    console.log(this.roomController.rooms);
   }
 }
