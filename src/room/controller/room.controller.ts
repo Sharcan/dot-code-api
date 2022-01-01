@@ -55,18 +55,37 @@ export class RoomController {
     }
 
 
+    /**
+     * Rejoindre une team
+     * 
+     * @param socketId 
+     * @param pin 
+     * @param username 
+     * @param team 
+     * @returns 
+     */
     public joinTeam(socketId: string, pin: string, username: string, team: string) {
         const room = this._searchRoom(pin);
+        if (!room) {
+            return  { error: 'Room non trouvé' };
+        }
+        
+        room.addNewUser({socketId, username}, team)
 
+        return {message: `L'utilisateur a bien été ajouté à la team`, username: username, socketId: socketId, pin: pin};
+    }
+
+    /**
+     * Quitter une team
+     */
+    public leaveTeam(pin: string, socketId: string, username: string) {
+        const room = this._searchRoom(pin);
         if (!room) {
             return  { error: 'Room non trouvé' };
         }
 
-        room.addNewUser({socketId, username}, team)
-        
-        return { message: 'Utilisateur ajouté', pin: room.pin }
+        return room.removeUserFromUnknownTeam({socketId: socketId, username: username});
     }
-
 
     /**
      * Rechercher si une room existe
@@ -74,15 +93,8 @@ export class RoomController {
      * @param pin 
      * @returns 
      */
-    private _searchRoom(pin: string): Room | null {
-        let roomExist: Room;
-
-        this.rooms.forEach((room: Room, index: number) => {
-            roomExist = this._checkIfRoomExist(pin, room.pin) ? this.rooms[index] 
-                : null;
-        });
-
-        return roomExist;
+    public _searchRoom(pin: string): Room | undefined {
+       return this.rooms.find((roomToFind: Room) => roomToFind.pin === pin);
     }
 
     /**
