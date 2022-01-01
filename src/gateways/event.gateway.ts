@@ -25,13 +25,26 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   /** Reception des sockets */
 
   /**
+   * Get all rooms
+   * 
+   * @param client 
+   * @returns 
+   */
+  @SubscribeMessage('getRooms')
+  public getRooms() 
+  {
+    return this.roomController.getRooms();
+  }
+
+  /**
    * A la création d'une nouvelle room
    * 
    * @param client 
    * @returns 
    */
   @SubscribeMessage('newRoomCreation')
-  public newRoomCreation(@ConnectedSocket() client: Socket) {
+  public newRoomCreation(@ConnectedSocket() client: Socket) 
+  {
     const response = this.roomController.createRoom();
     if (response.pin) {
       // On connecte l'utilisateur à la room
@@ -45,48 +58,83 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   }
 
   /**
-   * A la connexion à une room
+   * Connexion à une room
    * 
    * @param client 
    * @param body 
    * @returns 
    */
    @SubscribeMessage('roomConnection')
-   public roomConnection(@ConnectedSocket() client: Socket, @MessageBody() body) {
-     const response = this.roomController.connectToRoom(body.pin, client.id);
-     if (response.pin) {
+   public roomConnection(@ConnectedSocket() client: Socket, @MessageBody() body) 
+   {
+     const res = this.roomController.connectToRoom(body.pin, client.id);
+
+     if (res.pin) {
         // On connecte l'utilisateur à la room
-        client.join(response.pin);
+        client.join(res.pin);
+
         this.usersConnectedToARoom.push({
           socketId: client.id,
-          pin: response.pin
+          pin: res.pin
         })
      }
-     return response;
-   }
 
+     return res;
+   }
    
    /**
-    * Lorsqu'un utilisateur rejoins une team avec un pseudo
+    * Lorsqu'un utilisateur entre son pseudo
     * 
     * @param client 
     * @param body 
     */
-   @SubscribeMessage('newUser')
-   public newUser(@ConnectedSocket() client: Socket, @MessageBody() body) {
-     const response = this.roomController.joinTeam(client.id, body.pin, body.username, body.team);
-     if (response.message) {
-        // On connecte l'utilisateur à la room
-        client.join(response.pin);
+   @SubscribeMessage('sendPseudo')
+   public sendPseudo(@ConnectedSocket() client: Socket, @MessageBody() body) 
+   {
+      const res = this.roomController.setUsername(client.id, body.pin, body.username);
+
+      if(!res.error) {
         this.usersConnectedToARoom.forEach((user: {socketId: string, pin: string, username?: string}) => {
           if (user.socketId === client.id) {
-            user.username = response.username;
+            user.username = body.username;
           }
         });
-     }
-     console.log(this.roomController.rooms);
+
+        client.emit('newUserConnected', {
+          user: { socketId: res.socketId, username: res.username }
+        });
+      }
+
+      return res;
    }
 
+   /**
+    * User join a team
+    * 
+    * @param client 
+    * @param body 
+    */
+   @SubscribeMessage('joinTeam')
+   public joinTeam(@ConnectedSocket() client: Socket, @MessageBody() body)
+   {
+      const res = this.roomController.joinTeam(client.id, body.pin, body.team);
+
+      return res;
+   }
+
+   /**
+    * Get connected users of a room
+    * 
+    * @param client 
+    * @param body 
+    */
+   @SubscribeMessage('getConnectedUsers')
+   public getConnectedUsers(@ConnectedSocket() client: Socket, @MessageBody() body)
+   {
+      const res = this.roomController.getConnectedUsers(body.pin);
+
+      return res;
+   }
 
   /**
    * Envoie des sockets

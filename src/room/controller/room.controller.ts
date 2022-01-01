@@ -1,18 +1,30 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { Room } from 'src/room/classes/room';
 import { TeamEnum } from '../enums/team.enum';
 @Controller('room')
 export class RoomController {
 
     /** L'ensemble des rooms créées */
-    public rooms: Room[] = [];
+    public rooms: Room[] = [new Room('123')];
+
+    /**
+     * Get a room
+     * 
+     * @returns Room
+     */
+    public getRooms() 
+    {
+        console.log(this.rooms)
+        return this.rooms;
+    }
 
     /**
      * Création à une room
      * 
      * @returns json
      */
-    public createRoom() {
+    public createRoom() 
+    {
 
         let roomExist: boolean = false;
         let newPin: string;
@@ -43,17 +55,61 @@ export class RoomController {
      * @param pin 
      * @returns json
      */
-    public connectToRoom(pin: string, socketId: string) {
-
+    public connectToRoom(pin: string, socketId: string) 
+    {
         const room = this._searchRoom(pin);
         
+        // Check room exists
         if (!room) {
             return  { error: 'Room non trouvé' };
+        }
+
+        // Store user if not already in
+        if(!room.connectedUsers.find(user => user.socketId == socketId)) {
+            room.connectUser({ socketId })
         }
 
         return { message: 'Room trouvée', pin: room.pin };
     }
 
+    /**
+     * Set username of user in room
+     * 
+     * @param socketId 
+     * @param pin 
+     * @param username 
+     * @returns json
+     */
+    public setUsername(socketId: string, pin: string, username: string) 
+    {
+        if(!username) {
+            return { error: `Merci d'entrer un pseudo` }
+        }
+
+        const room = this._searchRoom(pin);
+        if (!room) {
+            return  { error: 'Room non trouvée' };
+        }
+
+        room.setUsername(socketId, username);
+
+        return {
+            message: `Le pseudo de l'utilisateur a bien été mis à jour`, 
+            pin: pin, 
+            socketId: socketId, 
+            username: username
+        }
+    }
+
+    public getConnectedUsers(pin: string)
+    {
+        const room = this._searchRoom(pin);
+        if (!room) {
+            return  { error: 'Room non trouvée' };
+        }
+
+        return room;
+    }
 
     /**
      * Rejoindre une team
@@ -64,21 +120,31 @@ export class RoomController {
      * @param team 
      * @returns 
      */
-    public joinTeam(socketId: string, pin: string, username: string, team: string) {
+    public joinTeam(socketId: string, pin: string, team: string) 
+    {
+        // Get room
         const room = this._searchRoom(pin);
         if (!room) {
-            return  { error: 'Room non trouvé' };
+            return  { error: 'Room non trouvée' };
+        }
+
+        // Get user
+        const user = room.getConnectedUser(socketId);
+        if (!room) {
+            return  { error: 'User non trouvé' };
         }
         
-        room.addNewUser({socketId, username}, team)
+        // Add user to team
+        room.addUserToTeam(user, team);
 
-        return {message: `L'utilisateur a bien été ajouté à la team`, username: username, socketId: socketId, pin: pin};
+        return {message: `L'utilisateur a bien été ajouté à la team`, user: user};
     }
 
     /**
      * Quitter une team
      */
-    public leaveTeam(pin: string, socketId: string, username: string) {
+    public leaveTeam(pin: string, socketId: string, username: string) 
+    {
         const room = this._searchRoom(pin);
         if (!room) {
             return  { error: 'Room non trouvé' };
@@ -93,7 +159,8 @@ export class RoomController {
      * @param pin 
      * @returns 
      */
-    public _searchRoom(pin: string): Room | undefined {
+    public _searchRoom(pin: string): Room | undefined 
+    {
        return this.rooms.find((roomToFind: Room) => roomToFind.pin === pin);
     }
 
@@ -104,7 +171,8 @@ export class RoomController {
      * @param pin 
      * @returns 
      */
-    private _checkIfRoomExist(newRoomPin: string, pin: string) {
+    private _checkIfRoomExist(newRoomPin: string, pin: string) 
+    {
        return newRoomPin === pin;
     }
 
@@ -113,8 +181,8 @@ export class RoomController {
      * 
      * @returns string
      */
-    private __getNewPin() {
-
+    private __getNewPin() 
+    {
         const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         let newPin = "";
     
@@ -136,7 +204,8 @@ export class RoomController {
      * @param max 
      * @returns number
      */
-    private __getRandomInt(max: number) {
+    private __getRandomInt(max: number) 
+    {
         return Math.floor(Math.random() * Math.floor(max));
     }
 }
