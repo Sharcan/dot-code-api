@@ -45,7 +45,7 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   @SubscribeMessage('newRoomCreation')
   public newRoomCreation(@ConnectedSocket() client: Socket) 
   {
-    const response = this.roomController.createRoom();
+    const response = this.roomController.createRoom(client.id);
     if (response.pin) {
       // On connecte l'utilisateur à la room
       client.join(response.pin);

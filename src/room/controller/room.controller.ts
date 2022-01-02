@@ -23,7 +23,7 @@ export class RoomController {
      * 
      * @returns json
      */
-    public createRoom() 
+    public createRoom(socketId: string) 
     {
 
         let roomExist: boolean = false;
@@ -44,8 +44,11 @@ export class RoomController {
         const room = new Room(newPin);
         this.rooms.push(room);
         
-        // TODO : Envoyer socket de création de room et d'ajout de l'utilisateur dans la room
-        // TODO : Retourner json comme quoi j'ai créé une room
+        // Store user if not already in
+        if(!room.connectedUsers.find(user => user.socketId == socketId)) {
+            room.connectUser({ socketId })
+        }
+
         return { message: 'Room créée', pin: room.pin }
     }
 
@@ -130,6 +133,7 @@ export class RoomController {
 
         // Get user
         const user = room.getConnectedUser(socketId);
+        console.log(user);
         if (!room) {
             return  { error: 'User non trouvé' };
         }
