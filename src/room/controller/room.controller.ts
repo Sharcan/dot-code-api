@@ -125,6 +125,11 @@ export class RoomController {
      */
     public joinTeam(socketId: string, pin: string, team: string) 
     {
+        // Check team exists
+        if(!Object.values(TeamEnum)?.includes(team as TeamEnum)) {
+            return  { error: `Cette équipe n'existe pas` };
+        }
+
         // Get room
         const room = this._searchRoom(pin);
         if (!room) {
@@ -133,9 +138,18 @@ export class RoomController {
 
         // Get user
         const user = room.getConnectedUser(socketId);
-        console.log(user);
-        if (!room) {
+        if (!user) {
             return  { error: 'User non trouvé' };
+        }
+
+        // Check team is empty (1v1 only)
+        if((team == TeamEnum.TEAM_1 && room.team_1.length) || (team == TeamEnum.TEAM_2 && room.team_2.length)) {
+            return { error: `Cette équipe est déjà pleine` }
+        }
+
+        // Check if not already in team
+        if((team == TeamEnum.TEAM_1 && room.team_1.find(member => member.socketId == user.socketId)) || (team == TeamEnum.TEAM_2 && room.team_2.find(member => member.socketId == user.socketId))) {
+            return { error: `L'utilisateur fait déjà partie de cette équipe` }
         }
         
         // Add user to team
@@ -149,12 +163,34 @@ export class RoomController {
      */
     public leaveTeam(pin: string, socketId: string, username: string) 
     {
+        // Get room
         const room = this._searchRoom(pin);
         if (!room) {
             return  { error: 'Room non trouvé' };
         }
 
         return room.removeUserFromUnknownTeam({socketId: socketId, username: username});
+    }
+
+    /**
+     * Launch the game
+     * 
+     * @param pin 
+     */
+    public launchGame(pin: string)
+    {
+        // Get room
+        const room = this._searchRoom(pin);
+        if (!room) {
+            return  { error: 'Room non trouvé' };
+        }
+
+        // Check teams not empty
+        if(!room.team_1.length || !room.team_2.length) {
+            return { error: `Les équipes ne sont pas pleines` }
+        }
+
+        return { message: `La partie peut se lancer` }
     }
 
     /**

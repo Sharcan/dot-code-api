@@ -100,7 +100,7 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
           }
         });
 
-        client.emit('newUserConnected', {
+        client.broadcast.emit('newUserConnected', {
           user: { socketId: res.socketId, username: res.username }
         });
       }
@@ -119,22 +119,47 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
    {
       const res = this.roomController.joinTeam(client.id, body.pin, body.team);
 
-      return res;
-   }
-
-   /**
-    * Get connected users of a room
-    * 
-    * @param client 
-    * @param body 
-    */
-   @SubscribeMessage('getConnectedUsers')
-   public getConnectedUsers(@ConnectedSocket() client: Socket, @MessageBody() body)
-   {
-      const res = this.roomController.getConnectedUsers(body.pin);
+      if(!res.error) {
+        client.broadcast.emit('userJoinTeam', {
+          user: res.user,
+          team: body.team
+        });
+      }
 
       return res;
    }
+
+  /**
+  * Get connected users of a room
+  * 
+  * @param client 
+  * @param body 
+  */
+  @SubscribeMessage('getConnectedUsers')
+  public getConnectedUsers(@ConnectedSocket() client: Socket, @MessageBody() body)
+  {
+    const res = this.roomController.getConnectedUsers(body.pin);
+
+    return res;
+  }
+
+  /**
+  * Launch the game
+  * 
+  * @param client 
+  * @param body 
+  */
+  @SubscribeMessage('launchGame')
+  public launchGame(@ConnectedSocket() client: Socket, @MessageBody() body)
+  {
+    const res = this.roomController.launchGame(body.pin);
+
+    if(!res.error) {
+      client.broadcast.emit('launchGame');
+    }
+
+    return res;
+  }
 
   /**
    * Envoie des sockets
