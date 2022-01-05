@@ -1,3 +1,6 @@
+import { NoPrintException } from './exceptions/NoPrintException';
+import { BadCodeException } from './exceptions/BadCodeException';
+import { BadResultException } from './exceptions/BadResultException';
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { execSync } from 'child_process';
@@ -44,15 +47,34 @@ export class AppController {
 
     let result = {};
     try {
+      const output = execSync(`${executable} ${filePath} ?>&1`).toString();
+
+      if(!body.code.includes('console.log')) {
+        throw new NoPrintException('N\oubliez pas le console.log ! ;)');
+      }
+
+      if(output.trim() != body.expectedResult) {
+        throw new BadResultException;
+      }
+
+      body.expectedCode.forEach(code => {
+        if(!body.code.includes(code)) {
+          throw new BadCodeException;
+        }
+      });
+
       result = {
-        result: execSync(`${executable} ${filePath} ?>&1`).toString()
+        output: output.trim()
       };
     } catch(err) {
       result = {
-        error: err.stderr.toString()
+        output: err.stderr ? err.stderr.toString() : null,
+        error: err.stderr ? 'Oups ! On dirait qu\'il y a une erreur :(' : err.message
       }
     }
     fs.unlinkSync(filePath);
+
+    console.log(result);
 
     return result;
   }
