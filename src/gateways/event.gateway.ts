@@ -173,6 +173,34 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   }
 
   /**
+   * Lorsqu'on ecrit dans l'ide
+   * 
+   * @param client 
+   * @param values 
+   */
+  @SubscribeMessage('newTextInsert')
+  public onTextInsert(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body,
+  ) {
+    client.to(body.pin).emit('newTextInsert', body);
+  }
+
+  /**
+   * Lorsqu'on supprime dans l'ide
+   * 
+   * @param client 
+   * @param values 
+   */
+  @SubscribeMessage('newTextDelete')
+  public onTextDelete(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body,
+  ) {
+    client.to(body.pin).emit('newTextDelete', body);
+  }
+
+  /**
    * Envoie des sockets
    */
 
