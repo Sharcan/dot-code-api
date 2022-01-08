@@ -138,7 +138,7 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   @SubscribeMessage('getConnectedUsers')
   public getConnectedUsers(@ConnectedSocket() client: Socket, @MessageBody() body)
   {
-    const res = this.roomController.getConnectedUsers(body.pin);
+    const res = this.roomController.getConnectedUsers(body.pin, client.id);
 
     return res;
   }
@@ -159,6 +159,11 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     }
 
     return res;
+  }
+
+  @SubscribeMessage('getGameInformations')
+  public getGameInformations(@ConnectedSocket() client: Socket, @MessageBody() body) {
+  
   }
 
   /**

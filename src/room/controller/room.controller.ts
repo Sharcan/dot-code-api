@@ -1,4 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
+import { UserModel } from 'src/gateways/models/user.model';
 import { Room } from 'src/room/classes/room';
 import { TeamEnum } from '../enums/team.enum';
 @Controller('room')
@@ -104,14 +105,15 @@ export class RoomController {
         }
     }
 
-    public getConnectedUsers(pin: string)
+    public getConnectedUsers(pin: string, socketId: string)
     {
         const room = this._searchRoom(pin);
         if (!room) {
             return  { error: 'Room non trouvée' };
         }
+        const user: UserModel = room.getConnectedUser(socketId);
 
-        return room;
+        return {room: room, user: user};
     }
 
     /**
