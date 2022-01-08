@@ -139,7 +139,7 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   public getConnectedUsers(@ConnectedSocket() client: Socket, @MessageBody() body)
   {
     const res = this.roomController.getConnectedUsers(body.pin, client.id);
-
+    
     return res;
   }
 
@@ -161,9 +161,15 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     return res;
   }
 
-  @SubscribeMessage('getGameInformations')
-  public getGameInformations(@ConnectedSocket() client: Socket, @MessageBody() body) {
-  
+  /**
+   * On envoie la position du nouveau cursor à l'ensemble des users de la ROOM à l'exception de l'envoyeur
+   * 
+   * @param client 
+   * @param body 
+   */
+  @SubscribeMessage('gamerCursorChange')
+  public gamerCursorChange(@ConnectedSocket() client: Socket, @MessageBody() body) {
+    client.to(body.pin).emit('gamerCursorChange', body);
   }
 
   /**

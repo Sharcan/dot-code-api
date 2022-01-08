@@ -145,9 +145,9 @@ export class RoomController {
         }
 
         // Check team is empty (1v1 only)
-        if((team == TeamEnum.TEAM_1 && room.team_1.length) || (team == TeamEnum.TEAM_2 && room.team_2.length)) {
-            return { error: `Cette équipe est déjà pleine` }
-        }
+        // if((team == TeamEnum.TEAM_1 && room.team_1.length) || (team == TeamEnum.TEAM_2 && room.team_2.length)) {
+        //     return { error: `Cette équipe est déjà pleine` }
+        // }
 
         // Check if not already in team
         if((team == TeamEnum.TEAM_1 && room.team_1.find(member => member.socketId == user.socketId)) || (team == TeamEnum.TEAM_2 && room.team_2.find(member => member.socketId == user.socketId))) {
