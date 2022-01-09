@@ -13,7 +13,7 @@ import { Socket } from 'socket.io';
 import { Server } from 'http';
 import { RoomController } from 'src/room/controller/room.controller';
 
-@WebSocketGateway()
+@WebSocketGateway({ cors: true })
 export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
   public roomController: RoomController = new RoomController();
