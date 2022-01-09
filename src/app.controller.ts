@@ -74,8 +74,6 @@ export class AppController {
     }
     fs.unlinkSync(filePath);
 
-    console.log(result);
-
     return result;
   }
 }
