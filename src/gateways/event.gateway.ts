@@ -138,8 +138,8 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   @SubscribeMessage('getConnectedUsers')
   public getConnectedUsers(@ConnectedSocket() client: Socket, @MessageBody() body)
   {
-    const res = this.roomController.getConnectedUsers(body.pin);
-
+    const res = this.roomController.getConnectedUsers(body.pin, client.id);
+    
     return res;
   }
 
@@ -159,6 +159,45 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     }
 
     return res;
+  }
+
+  /**
+   * On envoie la position du nouveau cursor à l'ensemble des users de la ROOM à l'exception de l'envoyeur
+   * 
+   * @param client 
+   * @param body 
+   */
+  @SubscribeMessage('gamerCursorChange')
+  public gamerCursorChange(@ConnectedSocket() client: Socket, @MessageBody() body) {
+    client.to(body.pin).emit('gamerCursorChange', body);
+  }
+
+  /**
+   * Lorsqu'on ecrit dans l'ide
+   * 
+   * @param client 
+   * @param values 
+   */
+  @SubscribeMessage('newTextInsert')
+  public onTextInsert(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body,
+  ) {
+    client.to(body.pin).emit('newTextInsert', body);
+  }
+
+  /**
+   * Lorsqu'on supprime dans l'ide
+   * 
+   * @param client 
+   * @param values 
+   */
+  @SubscribeMessage('newTextDelete')
+  public onTextDelete(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body,
+  ) {
+    client.to(body.pin).emit('newTextDelete', body);
   }
 
   /**

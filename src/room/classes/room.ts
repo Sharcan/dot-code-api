@@ -59,6 +59,7 @@ export class Room {
         this.removeUserFromUnknownTeam(user);
         // Add to new team
         team === TeamEnum.TEAM_1 ? this.team_1.push(user) : this.team_2.push(user);
+        this.connectedUsers[this.connectedUsers.findIndex(searchUser => searchUser == user)].team = team;
     }
 
     /**
