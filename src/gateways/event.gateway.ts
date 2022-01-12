@@ -201,6 +201,20 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   }
 
   /**
+   * Lorsqu'on supprime dans l'ide
+   * 
+   * @param client 
+   * @param values 
+   */
+  @SubscribeMessage('onTab')
+  public onTab(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body,
+  ) {
+   client.to(body.pin).emit('onTab', body);
+  }
+
+  /**
    * Envoie des sockets
    */
 
