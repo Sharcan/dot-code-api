@@ -162,6 +162,24 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   }
 
   /**
+   * When next exercice is reached
+   * 
+   * @param client 
+   * @param body 
+   */
+  @SubscribeMessage('nextExercice')
+  public nextExercice(@ConnectedSocket() client: Socket, @MessageBody() body)
+  {
+    const res = this.roomController.nextExercice(body.pin, client.id);
+
+    if(!res.error) {
+      client.broadcast.emit('opponentSuccess');
+    }
+
+    return res;
+  }
+
+  /**
    * On envoie la position du nouveau cursor à l'ensemble des users de la ROOM à l'exception de l'envoyeur
    * 
    * @param client 
