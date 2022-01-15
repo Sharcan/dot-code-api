@@ -196,6 +196,28 @@ export class RoomController {
     }
 
     /**
+     * 
+     * @param pin 
+     * @param user 
+     */
+    public nextExercice(pin: string, socketId: string)
+    {
+        // Get room
+        const room = this._searchRoom(pin);
+        if (!room) {
+            return  { error: 'Room non trouvée' };
+        }
+
+        // Get user
+        const user = room.getConnectedUser(socketId);
+        if (!user) {
+            return  { error: 'User non trouvé' };
+        }
+
+        return { user: user };
+    }
+
+    /**
      * Rechercher si une room existe
      * 
      * @param pin 
