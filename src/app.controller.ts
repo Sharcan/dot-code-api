@@ -47,7 +47,7 @@ export class AppController {
 
     let result = {};
     try {
-      const output = execSync(`${executable} ${filePath} ?>&1`).toString();
+      const output = execSync(`${executable} ${filePath}`).toString();
 
       if(!body.code.includes('console.log')) {
         throw new NoPrintException('N\oubliez pas le console.log ! ;)');
