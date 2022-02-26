@@ -4,12 +4,12 @@ services:
   db:
     image: postgres
     environment:
-      - POSTGRES_USER=${DATABASE_USER}
-      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
     container_name: postgres-db
     ports:
-      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+      - '${DB_PORT}:${DB_PORT}'
     volumes:
       - ./pgdata:/var/lib/postgresql/data
 
@@ -21,12 +21,12 @@ services:
     command: npm run start:dev
     environment: 
       - DB_TYPE=${DB_TYPE}
-      - POSTGRES_HOST=${POSTGRES_HOST}
-      - POSTGRES_USER=${DATABASE_USER}
-      - POSTGRES_PASS=${DATABASE_PASSWORD}
+      - POSTGRES_HOST=${DB_HOST}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASS=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_SYNC=false
-      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_PORT=${DB_PORT}
       - APP_PORT=${APP_PORT}
     ports:
       - '${APP_PORT}:${APP_PORT}'
