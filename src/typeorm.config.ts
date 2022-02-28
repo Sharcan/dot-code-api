@@ -2,7 +2,7 @@ import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 
 const typeOrmConfig: TypeOrmModuleOptions = {
     type: 'postgres',
-    // host: process.env.POSTGRES_HOST || 'postgres-db',
+    host: process.env.POSTGRES_HOST || 'postgres-db',
     port: +process.env.DB_PORT || 5432,
     username: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || 'postgres',
@@ -15,7 +15,8 @@ const typeOrmConfig: TypeOrmModuleOptions = {
     synchronize: false,
     cli: {
         migrationsDir: 'src/migration'
-    }
+    },
+    autoLoadEntities: true,
 }
 
 export = typeOrmConfig
