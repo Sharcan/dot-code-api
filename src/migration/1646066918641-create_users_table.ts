@@ -25,7 +25,7 @@ export class createUsersTable1646066918641 implements MigrationInterface {
                     type: "int"
                 },
                 {
-                    name: "socker_id",
+                    name: "socket_id",
                     type: "varchar"
                 },
                 {
