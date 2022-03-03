@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import {Room} from "../../room/entity/room.entity";
 
 @Entity()
 export class User {
@@ -9,6 +10,11 @@ export class User {
     slug: string;
 
     // TODO: Ajouter les relations
+    @OneToOne(type => Room) @JoinColumn()
+    room_id: number
+
+    // @OneToOne()
+    team_id: number
 
     @Column()
     socket_id: string;
