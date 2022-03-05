@@ -5,12 +5,11 @@ import { EventGateway } from './gateways/event.gateway';
 import { RoomModule } from './room/room.module';
 import { UserModule } from './user/user.module';
 import {TypeOrmModule} from "@nestjs/typeorm";
-import {UserService} from "./user/service/user.service";
+import { GameModule } from './game/game.module';
+import { TeamsModule } from './teams/teams.module';
 
 @Module({
   imports: [
-    RoomModule,
-    UserModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.POSTGRES_HOST || 'postgres-db',
@@ -28,9 +27,14 @@ import {UserService} from "./user/service/user.service";
         migrationsDir: 'src/migration'
       },
       autoLoadEntities: true,
-    })
+    }),
+
+    RoomModule,
+    UserModule,
+    GameModule,
+    TeamsModule
   ],
   controllers: [AppController],
-  providers: [AppService, EventGateway, UserService],
+  providers: [AppService, EventGateway],
 })
 export class AppModule {}

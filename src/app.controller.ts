@@ -13,6 +13,7 @@ export class AppController {
 
   @Get()
   getHello(): string {
+    console.log('cc');
     return this.appService.getHello();
   }
 

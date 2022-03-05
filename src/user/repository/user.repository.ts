@@ -1,9 +1,9 @@
 import {Repository, EntityRepository} from "typeorm";
-import {Users} from "../entity/user.entity";
+import {User} from "../entity/user.entity";
 import {UserDto} from "../entity/user.dto";
 
-@EntityRepository(Users)
-export class UserRepository extends Repository<Users> {
+@EntityRepository(User)
+export class UserRepository extends Repository<User> {
 
     /**
      * Ajout d'un utilisateur dans la bdd

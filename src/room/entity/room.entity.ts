@@ -1,15 +1,19 @@
 import {Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn} from 'typeorm';
 import {ModeEnum} from "../enums/mode.enum";
 import {AccessEnum, StatusEnum} from "../enums/access.enum";
-import {Users} from "../../user/entity/user.entity";
+import {User} from "../../user/entity/user.entity";
+import {Game} from "../../game/entity/game.entity";
 
 @Entity()
 export class Room {
     @PrimaryGeneratedColumn()
     id: string;
 
-    @OneToOne(type => Users) @JoinColumn()
-    owner_id: number
+    @OneToOne(type => User) @JoinColumn()
+    owner: number
+
+    @OneToOne(type => Game) @JoinColumn()
+    game: number
 
     @Column()
     slug: string
@@ -29,9 +33,9 @@ export class Room {
     @Column()
     status: StatusEnum;
 
-    @Column()
-    created_at: Date;
+    @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
+    created_at: string;
 
-    @Column()
-    updated_at: Date;
+    @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
+    updated_at: string;
 }

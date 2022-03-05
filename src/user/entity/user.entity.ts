@@ -1,19 +1,19 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
 import {Room} from "../../room/entity/room.entity";
+import {Team} from "../../teams/entity/teams.entity";
 
 @Entity()
-export class Users {
+export class User {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
     slug: string;
 
-    // TODO: Ajouter les relations
-    // @OneToOne(type => Room) @JoinColumn()
+    @OneToOne(type => Room) @JoinColumn({})
     room: number
 
-    // @OneToOne()
+    @OneToOne(type => Team) @JoinColumn()
     team: number
 
     @Column()
@@ -31,9 +31,9 @@ export class Users {
     @Column({default: true})
     is_guest: boolean;
 
-    @Column()
-    created_at: Date;
+    @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
+    created_at: string;
 
-    @Column()
-    updated_at: Date;
+    @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
+    updated_at: string;
 }
