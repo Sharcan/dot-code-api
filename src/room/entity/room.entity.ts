@@ -1,14 +1,14 @@
 import {Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn} from 'typeorm';
 import {ModeEnum} from "../enums/mode.enum";
 import {AccessEnum, StatusEnum} from "../enums/access.enum";
-import {User} from "../../user/entity/user.entity";
+import {Users} from "../../user/entity/user.entity";
 
 @Entity()
 export class Room {
     @PrimaryGeneratedColumn()
     id: string;
 
-    @OneToOne(type => User) @JoinColumn()
+    @OneToOne(type => Users) @JoinColumn()
     owner_id: number
 
     @Column()

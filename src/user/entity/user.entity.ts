@@ -2,19 +2,19 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'ty
 import {Room} from "../../room/entity/room.entity";
 
 @Entity()
-export class User {
+export class Users {
     @PrimaryGeneratedColumn()
-    id: string;
+    id: number;
 
     @Column()
     slug: string;
 
     // TODO: Ajouter les relations
-    @OneToOne(type => Room) @JoinColumn()
-    room_id: number
+    // @OneToOne(type => Room) @JoinColumn()
+    room: number
 
     // @OneToOne()
-    team_id: number
+    team: number
 
     @Column()
     socket_id: string;

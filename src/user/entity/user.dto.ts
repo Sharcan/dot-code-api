@@ -1,19 +1,19 @@
-export interface UserDto {
-    id: string;
+export class UserDto {
+    // readonly id: string;
 
-    slug: string;
+    readonly slug: string;
 
-    room_id: number;
+    readonly room_id: number;
 
-    team_id: number;
+    readonly team_id: number;
 
-    socket_id: string;
+    readonly socket_id: string;
 
-    pseudo: string;
+    readonly pseudo: string;
 
-    email: string;
+    readonly email: string;
 
-    password: string;
+    readonly password: string;
 
-    is_guest: boolean;
+    readonly is_guest: boolean;
 }
