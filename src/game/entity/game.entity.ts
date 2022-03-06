@@ -32,8 +32,8 @@ export class Game {
     language: LanguageEnum;
 
     @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
-    created_at: Date;
+    created_at: string;
 
     @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
-    updated_at: Date;
+    updated_at: string;
 }
