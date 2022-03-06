@@ -12,7 +12,8 @@ export class Game {
     @Column()
     slug: string;
 
-    @OneToOne(type => User) @JoinColumn()
+    @OneToOne(type => User)
+    @JoinColumn({ name: 'creator_id' })
     creator: number;
 
     @Column()

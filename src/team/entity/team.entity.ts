@@ -9,7 +9,8 @@ export class Team {
     @Column()
     slug: string;
 
-    @OneToOne(type => Room) @JoinColumn()
+    @OneToOne(type => Room) 
+    @JoinColumn({ name: 'room_id' })
     room: string;
 
     @Column()

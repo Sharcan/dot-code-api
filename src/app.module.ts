@@ -6,13 +6,13 @@ import { RoomModule } from './room/room.module';
 import { UserModule } from './user/user.module';
 import {TypeOrmModule} from "@nestjs/typeorm";
 import { GameModule } from './game/game.module';
-import { TeamsModule } from './teams/teams.module';
+import { TeamsModule } from './team/teams.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.POSTGRES_HOST || 'postgres-db',
+      host: process.env.DB_HOST || 'postgres-db',
       port: +process.env.DB_PORT || 5432,
       username: process.env.DB_USER || 'postgres',
       password: process.env.DB_PASSWORD || 'postgres',

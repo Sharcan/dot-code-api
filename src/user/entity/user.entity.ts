@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
 import {Room} from "../../room/entity/room.entity";
-import {Team} from "../../teams/entity/teams.entity";
+import {Team} from "../../team/entity/team.entity";
 
 @Entity()
 export class User {
@@ -10,11 +10,13 @@ export class User {
     @Column()
     slug: string;
 
-    @OneToOne(type => Room) @JoinColumn({})
-    room: number
+    @OneToOne(type => Room)
+    @JoinColumn({ name: 'room_id' })
+    room: number;
 
-    @OneToOne(type => Team) @JoinColumn()
-    team: number
+    @OneToOne(type => Team)
+    @JoinColumn({ name: 'team_id' })
+    team: number;
 
     @Column()
     socket_id: string;
