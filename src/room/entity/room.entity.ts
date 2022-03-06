@@ -9,10 +9,12 @@ export class Room {
     @PrimaryGeneratedColumn()
     id: string;
 
-    @OneToOne(type => User) @JoinColumn()
+    @OneToOne(type => User)
+    @JoinColumn({ name: 'owner_id' })
     owner: number
 
-    @OneToOne(type => Game) @JoinColumn()
+    @OneToOne(type => Game)
+    @JoinColumn({ name: 'game_id' })
     game: number
 
     @Column()
