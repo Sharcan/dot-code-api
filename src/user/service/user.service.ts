@@ -10,10 +10,4 @@ export class UserService {
         private readonly _userRepository: Repository<User>
     ) {
     }
-
-    public insertUser(user: User) {
-        this._userRepository.insert(user).then(
-            () => console.log('reussi')
-        ).catch((e) => console.log(e));
-    }
 }

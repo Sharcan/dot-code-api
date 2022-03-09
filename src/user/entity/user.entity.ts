@@ -21,21 +21,21 @@ export class User {
     @Column()
     socket_id: string;
 
-    @Column()
+    @Column({ nullable: true })
     pseudo: string;
 
-    @Column({unique: true})
+    @Column({ unique: true, nullable: true })
     email: string;
 
-    @Column()
+    @Column({ nullable: true })
     password: string;
 
-    @Column({default: true})
+    @Column({ default: true })
     is_guest: boolean;
 
-    @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
+    @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
     created_at: string;
 
-    @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
+    @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
     updated_at: string;
 }
