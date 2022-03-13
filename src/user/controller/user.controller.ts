@@ -1,10 +1,11 @@
 import { ValidationPipe } from '@nestjs/common';
 import { UsePipes } from '@nestjs/common';
-import { User } from './../entity/user.entity';
+import { User } from '../entity/user.entity';
 import { Body, Controller, Post, Get, Patch, Param } from '@nestjs/common';
 import {UserDto} from "../entity/user.dto";
 import {UserRepository} from "../repository/user.repository";
 import {InjectRepository} from "@nestjs/typeorm";
+import * as bcrypt from 'bcrypt';
 
 @Controller('user')
 export class UserController {
@@ -22,7 +23,9 @@ export class UserController {
 
     @Post()
     @UsePipes(new ValidationPipe({ transform: true }))
-    create(@Body() userDto: UserDto) {
+    async create(@Body() userDto: UserDto) {
+        const test: number = parseInt(process.env.BCRYPT_SALT, 10);
+        userDto.password = await bcrypt.hash(userDto.password, test);
         return this._userRepository.insert(userDto);
     }
 

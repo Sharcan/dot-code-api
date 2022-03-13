@@ -1,17 +1,17 @@
-FROM node:lts-alpine as development
+FROM node:16.13.0 as development
 
 WORKDIR /usr/src/app
-COPY package*.json *
+COPY package*.json .
 
 RUN npm install glob rimraf
 
-RUN npm install --only=development
+RUN npm install
 
 COPY . .
 
 RUN npm run build
 
-FROM node:lts-alpine as production
+FROM node:16.13.0 as production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
