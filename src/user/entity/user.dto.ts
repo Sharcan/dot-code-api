@@ -1,19 +1,21 @@
 import { uuid } from "uuidv4";
-import {IsBoolean, IsEmail, IsNotEmpty, IsString} from "class-validator";
+import { IsBoolean, IsEmail, IsNotEmpty, IsString, IsOptional } from "class-validator";
 
 export class UserDto {
     @IsNotEmpty()
+    @IsString()
     public readonly slug: string = uuid();
 
     @IsString()
+    @IsOptional()
     public readonly pseudo: string;
 
     @IsEmail()
-    @IsNotEmpty()
+    @IsOptional()
     public readonly email: string;
 
-    @IsNotEmpty()
     @IsString()
+    @IsOptional()
     public password: string;
 
     @IsBoolean()

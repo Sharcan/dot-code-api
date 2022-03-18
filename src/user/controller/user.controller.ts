@@ -1,4 +1,4 @@
-import { ValidationPipe } from '@nestjs/common';
+import { Delete, ValidationPipe } from '@nestjs/common';
 import { UsePipes } from '@nestjs/common';
 import { User } from '../entity/user.entity';
 import { Body, Controller, Post, Get, Patch, Param } from '@nestjs/common';
@@ -24,8 +24,10 @@ export class UserController {
     @Post()
     @UsePipes(new ValidationPipe({ transform: true }))
     async create(@Body() userDto: UserDto) {
-        const test: number = parseInt(process.env.BCRYPT_SALT, 10);
-        userDto.password = await bcrypt.hash(userDto.password, test);
+        if(userDto.password) {
+            const password: number = parseInt(process.env.BCRYPT_SALT, 10);
+            userDto.password = await bcrypt.hash(userDto.password, password);
+        }
         return this._userRepository.insert(userDto);
     }
 
@@ -34,4 +36,8 @@ export class UserController {
       return this._userRepository.update(id, userDto);
     }
 
+    @Delete(':id')
+    delete(@Param('id') id: string) {
+        return this._userRepository.delete(id);
+    }
 }
