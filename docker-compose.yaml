@@ -3,13 +3,9 @@ version: '3.8'
 services:
   db:
     image: postgres
-    environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
     container_name: postgres-db
     ports:
-      - '${DB_PORT}:${DB_PORT}'
+      - '${DB_PORT}:5432'
     volumes:
       - ./pgdata:/var/lib/postgresql/data
 
@@ -20,14 +16,7 @@ services:
       target: development
     command: npm run start:dev
     environment: 
-      - DB_TYPE=${DB_TYPE}
-      - POSTGRES_HOST=${DB_HOST}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASS=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_SYNC=false
-      - POSTGRES_PORT=${DB_PORT}
-      - APP_PORT=${APP_PORT}
+      - DB_PORT=5432
     ports:
       - '${APP_PORT}:${APP_PORT}'
     volumes:
