@@ -1,3 +1,4 @@
+import { UserRepository } from './../user/repository/user.repository';
 import { Module } from '@nestjs/common';
 import { RoomController } from './controller/room.controller';
 import { RoomService } from './service/room.service';
@@ -6,7 +7,7 @@ import {Room} from "./entity/room.entity";
 import {RoomRepository} from "./repository/room.repository";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Room, RoomRepository])],
+  imports: [TypeOrmModule.forFeature([Room, RoomRepository, UserRepository])],
   exports: [TypeOrmModule],
   controllers: [RoomController],
   providers: [RoomService]

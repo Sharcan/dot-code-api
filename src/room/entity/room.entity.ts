@@ -9,7 +9,7 @@ export class Room {
     @PrimaryGeneratedColumn()
     id: string;
 
-    @OneToOne(type => User)
+    @OneToOne(() => User)
     @JoinColumn({ name: 'owner_id' })
     owner: number
 
@@ -20,14 +20,14 @@ export class Room {
     @Column()
     slug: string
 
-    @Column()
+    @Column({ nullable: true })
     mode: ModeEnum;
 
     @Column()
     name: string;
 
     @Column()
-    code: string;
+    pin: string;
 
     @Column()
     access: AccessEnum;

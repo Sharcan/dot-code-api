@@ -1,12 +1,71 @@
-import { Controller, Get } from '@nestjs/common';
+import { UserRepository } from './../../user/repository/user.repository';
+import { TeamRepository } from './../../team/repository/team.repository';
+import { RoomService } from './../service/room.service';
+import { Controller, Post, UsePipes, ValidationPipe, Body, Patch, Param, Get, Query } from '@nestjs/common';
 import { UserModel } from 'src/gateways/models/user.model';
-import { Room } from 'src/room/classes/room';
+import { RoomClass } from 'src/room/classes/room';
 import { TeamEnum } from '../enums/team.enum';
+import { RoomDto } from "../entity/room.dto";
+import { RoomRepository } from "../repository/room.repository";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Room } from '../entity/room.entity';
+
 @Controller('room')
 export class RoomController {
 
+    constructor(
+        @InjectRepository(Room)
+        private readonly _roomRepository: RoomRepository,
+        private readonly _roomService: RoomService,
+        private readonly _userRepository: UserRepository
+    ) {
+    }
+
+    @Get('find')
+    findBy(@Query() query) {
+        return this._roomRepository.find({
+            where: query
+        });
+    }
+
+    @Get('find-by-pin')
+    findByPin(@Query('pin') pin) {
+        return this._roomRepository.findOne({
+            where: {
+                pin: pin
+            }
+        });
+    }
+
+    @Get(':id')
+    findOne(@Param('id') id: string): Promise<Room> {
+        return this._roomRepository.findOne(id);
+    }
+
+    @Post()
+    @UsePipes(new ValidationPipe({ transform: true, skipMissingProperties: true }))
+    async create(@Body() roomDto: RoomDto) {
+        // Generate pin
+        const pin = this._roomService.generatePin();
+        roomDto.pin = pin;
+        roomDto.name = 'Room ' + pin;
+
+        // Get user
+        roomDto.owner_id = await this._userRepository.findOne(roomDto.owner_id)
+        console.log(roomDto)
+
+        return this._roomRepository.save(roomDto);
+    }
+
+    @Patch(':id')
+    update(@Param('id') id: string, @Body() roomDto: RoomDto) {
+      return this._roomRepository.update(id, roomDto);
+    }
+
+    // OLD
+
     /** L'ensemble des rooms créées */
-    public rooms: Room[] = [new Room('123')];
+    public rooms: RoomClass[] = [new RoomClass('123')];
 
     /**
      * Get a room
@@ -35,14 +94,14 @@ export class RoomController {
             newPin = this.__getNewPin();
 
             // on check si le pin existe déjà
-            this.rooms.forEach((key: Room) => {
+            this.rooms.forEach((key: RoomClass) => {
                 roomExist = this._checkIfRoomExist(newPin, key.pin)
             });
 
         } while (roomExist);
 
         // Création d'une nouvelle Room
-        const room = new Room(newPin);
+        const room = new RoomClass(newPin);
         this.rooms.push(room);
         
         // Store user if not already in
@@ -223,9 +282,9 @@ export class RoomController {
      * @param pin 
      * @returns 
      */
-    public _searchRoom(pin: string): Room | undefined 
+    public _searchRoom(pin: string): RoomClass | undefined 
     {
-       return this.rooms.find((roomToFind: Room) => roomToFind.pin === pin);
+       return this.rooms.find((roomToFind: RoomClass) => roomToFind.pin === pin);
     }
 
     /**
@@ -254,8 +313,7 @@ export class RoomController {
     
           const isNoL = this.__getRandomInt(2);
     
-          newPin += isNoL === 0 ? alphabet.charAt(this.__getRandomInt(alphabet.length)) 
-            : this.__getRandomInt(10);
+          newPin += isNoL === 0 ? alphabet.charAt(this.__getRandomInt(alphabet.length)) : this.__getRandomInt(10);
         
         }
     

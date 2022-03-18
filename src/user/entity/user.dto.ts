@@ -1,10 +1,22 @@
 import { uuid } from "uuidv4";
-import { IsBoolean, IsEmail, IsNotEmpty, IsString, IsOptional } from "class-validator";
+import { IsBoolean, IsEmail, IsNotEmpty, IsString, IsOptional, IsNumber } from "class-validator";
 
 export class UserDto {
     @IsNotEmpty()
     @IsString()
     public readonly slug: string = uuid();
+
+    @IsNumber()
+    @IsOptional()
+    public readonly room_id: number;
+
+    @IsNumber()
+    @IsOptional()
+    public readonly team_id: number;
+
+    @IsString()
+    @IsOptional()
+    public readonly socket_id: string;
 
     @IsString()
     @IsOptional()
@@ -20,8 +32,4 @@ export class UserDto {
 
     @IsBoolean()
     public readonly is_guest: boolean;
-
-    public readonly room_id: number;
-    public readonly team_id: number;
-    public readonly socket_id: string;
 }

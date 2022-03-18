@@ -1,3 +1,4 @@
+import { RoomRepository } from './../room/repository/room.repository';
 import { Logger } from '@nestjs/common';
 import {
   ConnectedSocket,
@@ -12,16 +13,19 @@ import {
 import { Socket } from 'socket.io';
 import { Server } from 'http';
 import { RoomController } from 'src/room/controller/room.controller';
+import { RoomService } from 'src/room/service/room.service';
+import { UserRepository } from 'src/user/repository/user.repository';
 
 @WebSocketGateway({ cors: true })
 export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
-  public roomController: RoomController = new RoomController();
+  public roomController: RoomController = new RoomController(new RoomRepository, new RoomService(new RoomRepository), new UserRepository);
 
   // Utilisateurs qui sont connectés à une room
   public usersConnectedToARoom: {socketId: string, pin: string, username?: string}[] = []
 
 
+  
   /** Reception des sockets */
 
   /**

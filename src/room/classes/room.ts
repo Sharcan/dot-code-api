@@ -1,7 +1,7 @@
 import { UserModel } from "../../gateways/models/user.model";
 import { TeamEnum } from "../enums/team.enum";
 
-export class Room {
+export class RoomClass {
 
     /**
      * Variables
