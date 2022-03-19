@@ -1,5 +1,5 @@
 import { uuid } from 'uuidv4';
-import { IsOptional, IsString, IsNumber, IsEnum } from 'class-validator';
+import { IsOptional, IsString, IsEnum } from 'class-validator';
 import { IsNotEmpty } from 'class-validator';
 import {ModeEnum} from "../enums/mode.enum";
 import {AccessEnum, StatusEnum} from "../enums/access.enum";
@@ -10,10 +10,10 @@ export class RoomDto {
     public slug: string = uuid();
 
     @IsOptional()
-    public owner_id;
+    public owner;
 
     @IsOptional()
-    public game_id: number;
+    public game: number;
 
     @IsString()
     @IsOptional()

@@ -8,7 +8,7 @@ export class TeamDto {
     @IsString()
     public readonly slug: string = uuid();
 
-    public readonly room_id: string;
+    public readonly room: string;
 
     @IsString()
     public readonly name: string;

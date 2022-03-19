@@ -1,5 +1,4 @@
 import { UserRepository } from './../../user/repository/user.repository';
-import { TeamRepository } from './../../team/repository/team.repository';
 import { RoomService } from './../service/room.service';
 import { Controller, Post, UsePipes, ValidationPipe, Body, Patch, Param, Get, Query } from '@nestjs/common';
 import { UserModel } from 'src/gateways/models/user.model';
@@ -30,11 +29,7 @@ export class RoomController {
 
     @Get('find-by-pin')
     findByPin(@Query('pin') pin) {
-        return this._roomRepository.findOne({
-            where: {
-                pin: pin
-            }
-        });
+        return this._roomService.getAllRoomInformation(pin);
     }
 
     @Get(':id')
@@ -49,10 +44,6 @@ export class RoomController {
         const pin = this._roomService.generatePin();
         roomDto.pin = pin;
         roomDto.name = 'Room ' + pin;
-
-        // Get user
-        roomDto.owner_id = await this._userRepository.findOne(roomDto.owner_id)
-        console.log(roomDto)
 
         return this._roomRepository.save(roomDto);
     }

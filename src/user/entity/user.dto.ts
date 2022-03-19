@@ -4,15 +4,15 @@ import { IsBoolean, IsEmail, IsNotEmpty, IsString, IsOptional, IsNumber } from "
 export class UserDto {
     @IsNotEmpty()
     @IsString()
-    public readonly slug: string = uuid();
+    public slug: string = uuid();
+
+    // @IsNumber()
+    // @IsOptional()
+    // public readonly room: number;
 
     @IsNumber()
     @IsOptional()
-    public readonly room_id: number;
-
-    @IsNumber()
-    @IsOptional()
-    public readonly team_id: number;
+    public readonly team: number;
 
     @IsString()
     @IsOptional()

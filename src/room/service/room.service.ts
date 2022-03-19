@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
-import {Room} from "../entity/room.entity";
-import {Repository} from "typeorm";
+import {RoomRepository} from "../repository/room.repository";
 
 @Injectable()
 export class RoomService {
     constructor(
-        @InjectRepository(Room)
-        private readonly _roomRepository: Repository<Room>
+        @InjectRepository(RoomRepository)
+        private readonly _roomRepository: RoomRepository
     ) {
+    }
+
+    public getAllRoomInformation(roomPin: string) {
+        return this._roomRepository.getAllRoomInformation(roomPin);
     }
 
     /**

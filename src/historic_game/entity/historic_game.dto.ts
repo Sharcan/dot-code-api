@@ -1,6 +1,6 @@
 export class HistoricGameDto {
     readonly slug: string;
-    readonly user_id: number;
+    readonly user: number;
     readonly room_name: string;
     readonly team_name: string;
     readonly result: string;

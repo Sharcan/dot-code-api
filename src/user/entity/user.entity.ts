@@ -1,5 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
-import {Room} from "../../room/entity/room.entity";
+import {Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne} from 'typeorm';
 import {Team} from "../../team/entity/team.entity";
 
 @Entity()
@@ -10,11 +9,7 @@ export class User {
     @Column()
     slug: string;
 
-    @OneToOne(type => Room)
-    @JoinColumn({ name: 'room_id' })
-    room: number;
-
-    @OneToOne(type => Team)
+    @ManyToOne(() => Team, (team: Team) => team.user)
     @JoinColumn({ name: 'team_id' })
     team: number;
 

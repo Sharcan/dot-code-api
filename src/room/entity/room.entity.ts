@@ -1,8 +1,9 @@
-import {Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn} from 'typeorm';
+import {Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, OneToMany} from 'typeorm';
 import {ModeEnum} from "../enums/mode.enum";
 import {AccessEnum, StatusEnum} from "../enums/access.enum";
 import {User} from "../../user/entity/user.entity";
 import {Game} from "../../game/entity/game.entity";
+import {Team} from "../../team/entity/team.entity";
 
 @Entity()
 export class Room {
@@ -13,9 +14,12 @@ export class Room {
     @JoinColumn({ name: 'owner_id' })
     owner: number
 
-    @OneToOne(type => Game)
+    @OneToOne(() => Game)
     @JoinColumn({ name: 'game_id' })
     game: number
+
+    @OneToMany(() => Team, (team) => team.room)
+    team: number
 
     @Column()
     slug: string
