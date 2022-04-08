@@ -1,5 +1,5 @@
-import { UserRepository } from './../../user/repository/user.repository';
-import { RoomService } from './../service/room.service';
+import { UserRepository } from '../../user/repository/user.repository';
+import { RoomService } from '../service/room.service';
 import { Controller, Post, UsePipes, ValidationPipe, Body, Patch, Param, Get, Query } from '@nestjs/common';
 import { UserModel } from 'src/gateways/models/user.model';
 import { RoomClass } from 'src/room/classes/room';
@@ -21,25 +21,25 @@ export class RoomController {
     }
 
     @Get('find')
-    findBy(@Query() query) {
+    public findBy(@Query() query) {
         return this._roomRepository.find({
             where: query
         });
     }
 
     @Get('find-by-pin')
-    findByPin(@Query('pin') pin) {
+    public findByPin(@Query('pin') pin) {
         return this._roomService.getAllRoomInformation(pin);
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string): Promise<Room> {
+    public findOne(@Param('id') id: string): Promise<Room> {
         return this._roomRepository.findOne(id);
     }
 
     @Post()
     @UsePipes(new ValidationPipe({ transform: true, skipMissingProperties: true }))
-    async create(@Body() roomDto: RoomDto) {
+    public async create(@Body() roomDto: RoomDto) {
         // Generate pin
         const pin = this._roomService.generatePin();
         roomDto.pin = pin;
@@ -49,7 +49,7 @@ export class RoomController {
     }
 
     @Patch(':id')
-    update(@Param('id') id: string, @Body() roomDto: RoomDto) {
+    public update(@Param('id') id: string, @Body() roomDto: RoomDto) {
       return this._roomRepository.update(id, roomDto);
     }
 

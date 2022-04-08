@@ -16,23 +16,23 @@ export class TeamController {
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string): Promise<Team> {
+    public findOne(@Param('id') id: string): Promise<Team> {
         return this._teamRepository.findOne(id);
     }
 
     @Post()
     @UsePipes(new ValidationPipe({ transform: true }))
-    async create(@Body() userDto: TeamDto) {
+    public async create(@Body() userDto: TeamDto) {
         return this._teamRepository.save(userDto);
     }
 
     @Patch(':id')
-    update(@Param('id') id: string, @Body() userDto: TeamDto) {
+    public update(@Param('id') id: string, @Body() userDto: TeamDto) {
       return this._teamRepository.update(id, userDto);
     }
 
     @Delete(':id')
-    delete(@Param('id') id: string) {
+    public delete(@Param('id') id: string) {
         return this._teamRepository.delete(id);
     }
 }
