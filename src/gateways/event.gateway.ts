@@ -15,11 +15,12 @@ import { Server } from 'http';
 import { RoomController } from 'src/room/controller/room.controller';
 import { RoomService } from 'src/room/service/room.service';
 import { UserRepository } from 'src/user/repository/user.repository';
+import { UserService } from 'src/user/service/user.service';
 
 @WebSocketGateway({ cors: true })
 export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
-  public roomController: RoomController = new RoomController(new RoomRepository, new RoomService(new RoomRepository), new UserRepository);
+  public roomController: RoomController = new RoomController(new RoomService(new RoomRepository), new UserService(new UserRepository));
 
   // Utilisateurs qui sont connectés à une room
   public usersConnectedToARoom: {socketId: string, pin: string, username?: string}[] = []
@@ -34,11 +35,11 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
    * @param client 
    * @returns 
    */
-  @SubscribeMessage('getRooms')
-  public getRooms() 
-  {
-    return this.roomController.getRooms();
-  }
+  // @SubscribeMessage('getRooms')
+  // public getRooms() 
+  // {
+  //   return this.roomController.getRooms();
+  // }
 
   /**
    * A la création d'une nouvelle room
@@ -46,20 +47,20 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
    * @param client 
    * @returns 
    */
-  @SubscribeMessage('newRoomCreation')
-  public newRoomCreation(@ConnectedSocket() client: Socket) 
-  {
-    const response = this.roomController.createRoom(client.id);
-    if (response.pin) {
-      // On connecte l'utilisateur à la room
-      client.join(response.pin);
-      this.usersConnectedToARoom.push({
-        socketId: client.id,
-        pin: response.pin
-      })
-    }
-    return response;
-  }
+  // @SubscribeMessage('newRoomCreation')
+  // public newRoomCreation(@ConnectedSocket() client: Socket) 
+  // {
+  //   const response = this.roomController.createRoom(client.id);
+  //   if (response.pin) {
+  //     // On connecte l'utilisateur à la room
+  //     client.join(response.pin);
+  //     this.usersConnectedToARoom.push({
+  //       socketId: client.id,
+  //       pin: response.pin
+  //     })
+  //   }
+  //   return response;
+  // }
 
   /**
    * Connexion à une room
