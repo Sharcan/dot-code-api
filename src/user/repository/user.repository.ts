@@ -1,9 +1,9 @@
-import {Repository, EntityRepository} from "typeorm";
-import {User} from "../entity/user.entity";
-import {CreateGuestUserDto} from "../dto/create-guest-user.dto";
-import {uuid} from "uuidv4";
-import {Room} from "../../room/entity/room.entity";
-import {ConnectInRoomUserDto} from "../dto/connect-in-room-user.dto";
+import { Repository, EntityRepository } from "typeorm";
+import { User } from "../entity/user.entity";
+import { CreateGuestUserDto } from "../dto/create-guest-user.dto";
+import { uuid } from "uuidv4";
+import { Room } from "../../room/entity/room.entity";
+import { ConnectInRoomUserDto } from "../dto/connect-in-room-user.dto";
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
@@ -13,14 +13,15 @@ export class UserRepository extends Repository<User> {
      *
      * @param userGuestDto
      */
-    public async createGuestUser(userGuestDto: CreateGuestUserDto) {
+    public async createGuestUser(userGuestDto: CreateGuestUserDto)
+    {
         const user = this.create({
             slug: uuid(),
             is_guest: true,
             ...userGuestDto
         });
 
-        await this.save(user);
+        return await this.save(user);
     }
 
     /**
@@ -30,7 +31,8 @@ export class UserRepository extends Repository<User> {
      * @param userUpdate
      * @param room
      */
-    public async updateUserForRoom(id: string, userUpdate: ConnectInRoomUserDto, room: Room) {
+    public async updateUserForRoom(id: string, userUpdate: ConnectInRoomUserDto, room: Room)
+    {
 
         const { pseudo } = userUpdate;
 

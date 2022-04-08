@@ -1,7 +1,6 @@
-import { OneToMany } from 'typeorm';
-import { Room } from './../../room/entity/room.entity';
-import {Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne} from 'typeorm';
-import {Team} from "../../team/entity/team.entity";
+import { Room } from '../../room/entity/room.entity';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from 'typeorm';
+import { Team } from "../../team/entity/team.entity";
 
 @Entity()
 export class User {

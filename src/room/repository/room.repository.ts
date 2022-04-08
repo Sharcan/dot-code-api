@@ -1,14 +1,14 @@
-import { AccessEnum, StatusEnum } from './../enums/access.enum';
+import { AccessEnum, StatusEnum } from '../enums/access.enum';
 import { uuid } from 'uuidv4';
-import { CreateRoomDto } from './../dto/create-room.dto';
-import { getRoomsFilterDto } from './../dto/get-rooms-filter.dto';
-import {EntityRepository, Repository, createQueryBuilder} from "typeorm";
-import {Room} from "../entity/room.entity";
+import { CreateRoomDto } from '../dto/create-room.dto';
+import { EntityRepository, Repository, createQueryBuilder } from "typeorm";
+import { Room } from "../entity/room.entity";
 
 @EntityRepository(Room)
 export class RoomRepository extends Repository<Room> {
 
-    public getAllRoomInformation (roomPin: string) {
+    public getAllRoomInformation (roomPin: string)
+    {
         return createQueryBuilder('room', 'r')
             .innerJoinAndSelect('r.team', 't')
             .leftJoinAndSelect('t.user', 'u')

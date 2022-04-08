@@ -2,13 +2,13 @@ import { CreateRoomDto } from '../dto/create-room.dto';
 import { User } from '../../user/entity/user.entity';
 import { Room } from '../entity/room.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import {InjectRepository} from "@nestjs/typeorm";
-import {RoomRepository} from "../repository/room.repository";
+import { InjectRepository } from "@nestjs/typeorm";
+import { RoomRepository } from "../repository/room.repository";
 
 @Injectable()
 export class RoomService {
     constructor(
-        @InjectRepository(Room)
+        @InjectRepository(RoomRepository)
         private readonly _roomRepository: RoomRepository
     ) {
     }
@@ -35,7 +35,7 @@ export class RoomService {
         return room;
     }
 
-    public async createRoom(createRoomDto: CreateRoomDto): Promise<Room>
+    public createRoom(createRoomDto: CreateRoomDto): Promise<Room>
     {
         const pin = this.generatePin();
         const name = 'Room ' + pin;

@@ -1,11 +1,21 @@
-import { UserService } from './../../user/service/user.service';
-import { CreateRoomDto } from './../dto/create-room.dto';
+import { UserService } from '../../user/service/user.service';
+import { CreateRoomDto } from '../dto/create-room.dto';
 import { RoomService } from '../service/room.service';
-import { Controller, Post, UsePipes, ValidationPipe, Body, Param, Get, Query, Delete } from '@nestjs/common';
+import {
+    Controller,
+    Post,
+    UsePipes,
+    ValidationPipe,
+    Body,
+    Param,
+    Get,
+    Query,
+    Delete
+} from '@nestjs/common';
 import { UserModel } from 'src/gateways/models/user.model';
 import { RoomClass } from 'src/room/classes/room';
 import { TeamEnum } from '../enums/team.enum';
-import { Room } from '../entity/room.entity';
+import { Room } from "../entity/room.entity";
 
 @Controller('room')
 export class RoomController {
@@ -16,29 +26,32 @@ export class RoomController {
     ) {}
 
     @Get(':id')
-    public getRoomById(@Param('id') id: number): Promise<Room> {
+    public getRoomById(@Param('id') id: number): Promise<Room>
+    {
         return this._roomService.getRoomById(id);
     }
 
     @Get('/pin/:pin')
-    public getRoomByPin(@Query('pin') pin: string): Promise<Room> {
+    public getRoomByPin(@Query('pin') pin: string): Promise<Room>
+    {
         return this._roomService.getRoomByPin(pin);
     }
 
     @Post()
     @UsePipes(new ValidationPipe())
-    public async createRoom(@Body() createRoomDto: CreateRoomDto): Promise<Room> {
+    public async createRoom(@Body() createRoomDto: CreateRoomDto): Promise<Room>
+    {
         // Create room
         const room = await this._roomService.createRoom(createRoomDto);
 
         // Update user room
-        this._userService.updateUserRoom(room.owner.id, room);
-        
+        await this._userService.updateUserRoom(room.owner.id, room);
+
         return room;
     }
 
     @Delete('/:id')
-    deleteRoom(@Param('id') id: number): Promise<void> {
+    public deleteRoom(@Param('id') id: number): Promise<void> {
         return this._roomService.deleteRoom(id);
     }
 

@@ -1,4 +1,3 @@
-import { RoomRepository } from '../room/repository/room.repository';
 import { Logger } from '@nestjs/common';
 import {
   ConnectedSocket,
@@ -12,15 +11,11 @@ import {
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { Server } from 'http';
-import { RoomController } from 'src/room/controller/room.controller';
-import { RoomService } from 'src/room/service/room.service';
-import { UserRepository } from 'src/user/repository/user.repository';
-import { UserService } from 'src/user/service/user.service';
 
 @WebSocketGateway({ cors: true })
 export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
-  public roomController: RoomController = new RoomController(new RoomService(new RoomRepository), new UserService(new UserRepository));
+  // public roomController: RoomController = new RoomController(new RoomService(new RoomRepository), new UserService(new UserRepository));
 
   // Utilisateurs qui sont connectés à une room
   public usersConnectedToARoom: {socketId: string, pin: string, username?: string}[] = []
@@ -72,19 +67,19 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
    @SubscribeMessage('roomConnection')
    public roomConnection(@ConnectedSocket() client: Socket, @MessageBody() body) 
    {
-     const res = this.roomController.connectToRoom(body.pin, client.id);
-
-     if (res.pin) {
-        // On connecte l'utilisateur à la room
-        client.join(res.pin);
-
-        this.usersConnectedToARoom.push({
-          socketId: client.id,
-          pin: res.pin
-        })
-     }
-
-     return res;
+     // const res = this.roomController.connectToRoom(body.pin, client.id);
+     //
+     // if (res.pin) {
+     //    // On connecte l'utilisateur à la room
+     //    client.join(res.pin);
+     //
+     //    this.usersConnectedToARoom.push({
+     //      socketId: client.id,
+     //      pin: res.pin
+     //    })
+     // }
+     //
+     // return res;
    }
    
    /**
@@ -96,21 +91,21 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
    @SubscribeMessage('sendPseudo')
    public sendPseudo(@ConnectedSocket() client: Socket, @MessageBody() body) 
    {
-      const res = this.roomController.setUsername(client.id, body.pin, body.username);
-
-      if(!res.error) {
-        this.usersConnectedToARoom.forEach((user: {socketId: string, pin: string, username?: string}) => {
-          if (user.socketId === client.id) {
-            user.username = body.username;
-          }
-        });
-
-        client.broadcast.emit('newUserConnected', {
-          user: { socketId: res.socketId, username: res.username }
-        });
-      }
-
-      return res;
+      // const res = this.roomController.setUsername(client.id, body.pin, body.username);
+      //
+      // if(!res.error) {
+      //   this.usersConnectedToARoom.forEach((user: {socketId: string, pin: string, username?: string}) => {
+      //     if (user.socketId === client.id) {
+      //       user.username = body.username;
+      //     }
+      //   });
+      //
+      //   client.broadcast.emit('newUserConnected', {
+      //     user: { socketId: res.socketId, username: res.username }
+      //   });
+      // }
+      //
+      // return res;
    }
 
    /**
@@ -122,16 +117,16 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
    @SubscribeMessage('joinTeam')
    public joinTeam(@ConnectedSocket() client: Socket, @MessageBody() body)
    {
-      const res = this.roomController.joinTeam(client.id, body.pin, body.team);
-
-      if(!res.error) {
-        client.broadcast.emit('userJoinTeam', {
-          user: res.user,
-          team: body.team
-        });
-      }
-
-      return res;
+      // const res = this.roomController.joinTeam(client.id, body.pin, body.team);
+      //
+      // if(!res.error) {
+      //   client.broadcast.emit('userJoinTeam', {
+      //     user: res.user,
+      //     team: body.team
+      //   });
+      // }
+      //
+      // return res;
    }
 
   /**
@@ -143,9 +138,9 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   @SubscribeMessage('getConnectedUsers')
   public getConnectedUsers(@ConnectedSocket() client: Socket, @MessageBody() body)
   {
-    const res = this.roomController.getConnectedUsers(body.pin, client.id);
-    
-    return res;
+    // const res = this.roomController.getConnectedUsers(body.pin, client.id);
+    //
+    // return res;
   }
 
   /**
@@ -157,13 +152,13 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   @SubscribeMessage('launchGame')
   public launchGame(@ConnectedSocket() client: Socket, @MessageBody() body)
   {
-    const res = this.roomController.launchGame(body.pin);
-
-    if(!res.error) {
-      client.broadcast.emit('launchGame');
-    }
-
-    return res;
+    // const res = this.roomController.launchGame(body.pin);
+    //
+    // if(!res.error) {
+    //   client.broadcast.emit('launchGame');
+    // }
+    //
+    // return res;
   }
 
   /**
@@ -175,13 +170,13 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   @SubscribeMessage('nextExercice')
   public nextExercice(@ConnectedSocket() client: Socket, @MessageBody() body)
   {
-    const res = this.roomController.nextExercice(body.pin, client.id);
-
-    if(!res.error) {
-      client.broadcast.emit('opponentSuccess');
-    }
-
-    return res;
+  //   const res = this.roomController.nextExercice(body.pin, client.id);
+  //
+  //   if(!res.error) {
+  //     client.broadcast.emit('opponentSuccess');
+  //   }
+  //
+  //   return res;
   }
 
   /**
@@ -192,7 +187,7 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
    */
   @SubscribeMessage('gamerCursorChange')
   public gamerCursorChange(@ConnectedSocket() client: Socket, @MessageBody() body) {
-    client.to(body.pin).emit('gamerCursorChange', body);
+    // client.to(body.pin).emit('gamerCursorChange', body);
   }
 
   /**
@@ -206,7 +201,7 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     @ConnectedSocket() client: Socket,
     @MessageBody() body,
   ) {
-    client.to(body.pin).emit('newTextInsert', body);
+    // client.to(body.pin).emit('newTextInsert', body);
   }
 
   /**
@@ -220,7 +215,7 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     @ConnectedSocket() client: Socket,
     @MessageBody() body,
   ) {
-    client.to(body.pin).emit('newTextDelete', body);
+    // client.to(body.pin).emit('newTextDelete', body);
   }
 
   /**
@@ -234,7 +229,7 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     @ConnectedSocket() client: Socket,
     @MessageBody() body,
   ) {
-   client.to(body.pin).emit('onTab', body);
+   // client.to(body.pin).emit('onTab', body);
   }
 
   /**
@@ -250,11 +245,11 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   private logger: Logger = new Logger('AppGateway');
 
   public afterInit(server: Server) {
-    this.logger.log('Init');
+    // this.logger.log('Init');
   }
 
   public handleConnection(client: Socket, ...args: any[]) {
-    this.logger.log(`Client connected: ${client}`);
+    // this.logger.log(`Client connected: ${client}`);
   }
   
   /**
@@ -263,14 +258,14 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
    * @param client 
    */
   public handleDisconnect(client: Socket) {
-    const userFound = this.usersConnectedToARoom.find((user: {socketId: string, pin: string}) => user.socketId === client.id);
-    if (userFound) {
-      const response: {message?: string, error?: string, pin?: string} = this.roomController.leaveTeam(userFound.pin, userFound.socketId, userFound.username);
-
-      if (response.message) {
-        client.to(response.pin).emit('userHasDisconnected', 'An user has disconnected');
-      }
-    }
-    console.log(this.roomController.rooms);
+    // const userFound = this.usersConnectedToARoom.find((user: {socketId: string, pin: string}) => user.socketId === client.id);
+    // if (userFound) {
+    //   const response: {message?: string, error?: string, pin?: string} = this.roomController.leaveTeam(userFound.pin, userFound.socketId, userFound.username);
+    //
+    //   if (response.message) {
+    //     client.to(response.pin).emit('userHasDisconnected', 'An user has disconnected');
+    //   }
+    // }
+    // console.log(this.roomController.rooms);
   }
 }

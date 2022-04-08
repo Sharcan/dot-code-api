@@ -4,8 +4,8 @@ import { UsePipes } from '@nestjs/common';
 import { Body, Controller, Post, Patch, Param } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { CreateGuestUserDto } from "../dto/create-guest-user.dto";
-import {UserService} from "../service/user.service";
-import {ConnectInRoomUserDto} from "../dto/connect-in-room-user.dto";
+import { UserService } from "../service/user.service";
+import { ConnectInRoomUserDto } from "../dto/connect-in-room-user.dto";
 
 @Controller('user')
 export class UserController {
@@ -23,7 +23,8 @@ export class UserController {
      */
     @Post('guest')
     @UsePipes(new ValidationPipe({ transform: true }))
-    public createGuestUser(@Body() userGuestDto: CreateGuestUserDto) {
+    public createGuestUser(@Body() userGuestDto: CreateGuestUserDto)
+    {
         return this._userService.createGuestUser(userGuestDto);
     }
 
@@ -34,14 +35,21 @@ export class UserController {
      * @param updateUserDto
      */
     @Patch(':id/connect')
-    public async connect(@Param('id') id: string, @Body() updateUserDto: ConnectInRoomUserDto) {
+    public async connect(@Param('id') id: string, @Body() updateUserDto: ConnectInRoomUserDto)
+    {
         const room = await this._roomService.getRoomById(updateUserDto.room_id);
 
         return this._userService.updateUserForRoom(id, updateUserDto, room);
     }
 
+    /**
+     * Remove id room from the user when he disconnects from the room
+     *
+     * @param id
+     */
     @Patch(':id/disconnect')
-    public async disconnect(@Param('id') id: string) {
+    public async disconnect(@Param('id') id: string)
+    {
         // Get user
         const user = await this._userService.getOne(id, {
             relations: ['room']
@@ -56,6 +64,8 @@ export class UserController {
 
         // Get room and update owner
         await this._roomService.changeOwnerRandom(user.room.id);
+
+        return {"success": `Room id have been successfully removed from the user ${id}`}
     }
 
 }

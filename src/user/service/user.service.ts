@@ -1,16 +1,16 @@
 import { Room } from '../../room/entity/room.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import {InjectRepository} from "@nestjs/typeorm";
-import {User} from "../entity/user.entity";
-import {CreateGuestUserDto} from "../dto/create-guest-user.dto";
-import {UserRepository} from "../repository/user.repository";
-import {ConnectInRoomUserDto} from "../dto/connect-in-room-user.dto";
-import {FindOneOptions} from "typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { User } from "../entity/user.entity";
+import { CreateGuestUserDto } from "../dto/create-guest-user.dto";
+import { UserRepository } from "../repository/user.repository";
+import { ConnectInRoomUserDto } from "../dto/connect-in-room-user.dto";
+import { FindOneOptions } from "typeorm";
 
 @Injectable()
 export class UserService {
     constructor(
-        @InjectRepository(User)
+        @InjectRepository(UserRepository)
         private readonly _userRepository: UserRepository,
     ) {
     }
@@ -41,7 +41,8 @@ export class UserService {
      *
      * @param userGuest
      */
-    public createGuestUser(userGuest: CreateGuestUserDto) {
+    public createGuestUser(userGuest: CreateGuestUserDto)
+    {
         return this._userRepository.createGuestUser(userGuest);
     }
 
@@ -52,7 +53,8 @@ export class UserService {
      * @param updateUserDto
      * @param room
      */
-    public updateUserForRoom(userId: string, updateUserDto: ConnectInRoomUserDto, room: Room) {
+    public updateUserForRoom(userId: string, updateUserDto: ConnectInRoomUserDto, room: Room)
+    {
         return this._userRepository.updateUserForRoom(userId, updateUserDto, room)
     }
 
@@ -62,7 +64,8 @@ export class UserService {
      * @param id
      * @param options
      */
-    public getOne(id: string, options: FindOneOptions) {
+    public getOne(id: string, options: FindOneOptions)
+    {
         return this._userRepository.findOne(id, options);
     }
 
@@ -71,7 +74,8 @@ export class UserService {
      *
      * @param id
      */
-    public updateNullRoom(id: string) {
+    public updateNullRoom(id: string)
+    {
         return this._userRepository.update(id, {room: null});
     }
 }
