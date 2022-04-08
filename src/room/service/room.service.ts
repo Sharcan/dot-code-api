@@ -1,6 +1,6 @@
-import { CreateRoomDto } from './../dto/create-room.dto';
-import { User } from './../../user/entity/user.entity';
-import { Room } from './../entity/room.entity';
+import { CreateRoomDto } from '../dto/create-room.dto';
+import { User } from '../../user/entity/user.entity';
+import { Room } from '../entity/room.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {RoomRepository} from "../repository/room.repository";
@@ -8,7 +8,7 @@ import {RoomRepository} from "../repository/room.repository";
 @Injectable()
 export class RoomService {
     constructor(
-        @InjectRepository(RoomRepository)
+        @InjectRepository(Room)
         private readonly _roomRepository: RoomRepository
     ) {
     }
@@ -70,6 +70,12 @@ export class RoomService {
         if(result.affected === 0) {
             throw new NotFoundException(`Room with ID "${id}" not found`);
         }
+    }
+
+    public getRoomsInformation(query) {
+        return this._roomRepository.find({
+            where: query,
+        }, )
     }
 
     /**

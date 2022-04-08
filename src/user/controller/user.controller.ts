@@ -1,82 +1,61 @@
 import { RoomService } from 'src/room/service/room.service';
-import { Delete, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { UsePipes } from '@nestjs/common';
-import { User } from '../entity/user.entity';
-import { Body, Controller, Post, Get, Patch, Param } from '@nestjs/common';
-import { UserDto } from "../entity/user.dto";
-import { UserRepository } from "../repository/user.repository";
-import { InjectRepository } from "@nestjs/typeorm";
+import { Body, Controller, Post, Patch, Param } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { CreateGuestUserDto } from "../dto/create-guest-user.dto";
+import {UserService} from "../service/user.service";
+import {ConnectInRoomUserDto} from "../dto/connect-in-room-user.dto";
 
 @Controller('user')
 export class UserController {
 
     constructor(
-        @InjectRepository(UserRepository)
-        private readonly _userRepository: UserRepository,
+        private readonly _userService: UserService,
         private readonly _roomService: RoomService
     ) {
     }
 
-    @Get(':id')
-    findOne(@Param('id') id: string): Promise<User> {
-        return this._userRepository.findOne(id);
-    }
-
-    @Post()
+    /**
+     * Create user guest when he connects on the landing page
+     *
+     * @param userGuestDto
+     */
+    @Post('guest')
     @UsePipes(new ValidationPipe({ transform: true }))
-    async create(@Body() userDto: UserDto) {
-        if(userDto.password) {
-            const password: number = parseInt(process.env.BCRYPT_SALT, 10);
-            userDto.password = await bcrypt.hash(userDto.password, password);
-        }
-        return this._userRepository.save(userDto);
-    }
-
-    @Patch(':id')
-    update(@Param('id') id: string, @Body() userDto: UserDto) {
-        return this._userRepository.update(id, userDto);
-    }
-
-    @Delete(':id')
-    delete(@Param('id') id: string) {
-        return this._userRepository.delete(id);
+    public createGuestUser(@Body() userGuestDto: CreateGuestUserDto) {
+        return this._userService.createGuestUser(userGuestDto);
     }
 
     /**
-     * Connect user to a room
-     * 
-     * @param id 
-     * @param room_id 
+     * Update user when he joins a room
+     *
+     * @param id
+     * @param updateUserDto
      */
     @Patch(':id/connect')
-    connect(@Param('id') id: string, @Body() userDto: UserDto) {
-        if(!userDto.room) {
-            return false;
-        }
-        
-        this._userRepository.update(id, { room: userDto.room });
+    public async connect(@Param('id') id: string, @Body() updateUserDto: ConnectInRoomUserDto) {
+        const room = await this._roomService.getRoomById(updateUserDto.room_id);
+
+        return this._userService.updateUserForRoom(id, updateUserDto, room);
     }
 
-    /**
-     * Disonnect user from any room
-     * 
-     * @param id
-     */
     @Patch(':id/disconnect')
-    async disconnect(@Param('id') id: string) {
+    public async disconnect(@Param('id') id: string) {
         // Get user
-        const user = await this._userRepository.findOne(id, {
+        const user = await this._userService.getOne(id, {
             relations: ['room']
         });
+
         if(!user || !user.room) {
             return false;
         }
 
         // Disconnect user from room
-        this._userRepository.update(id, { room: null });
+        await this._userService.updateNullRoom(id);
 
         // Get room and update owner
-        this._roomService.changeOwnerRandom(user.room.id);
+        await this._roomService.changeOwnerRandom(user.room.id);
     }
+
 }

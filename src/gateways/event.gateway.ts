@@ -1,4 +1,4 @@
-import { RoomRepository } from './../room/repository/room.repository';
+import { RoomRepository } from '../room/repository/room.repository';
 import { Logger } from '@nestjs/common';
 import {
   ConnectedSocket,
