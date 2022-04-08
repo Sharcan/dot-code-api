@@ -1,10 +1,9 @@
+import { CreateRoomDto } from './../dto/create-room.dto';
 import { User } from './../../user/entity/user.entity';
 import { Room } from './../entity/room.entity';
-import { RoomDto } from './../entity/room.dto';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {RoomRepository} from "../repository/room.repository";
-import { FindOneOptions } from 'typeorm';
 
 @Injectable()
 export class RoomService {
@@ -14,27 +13,34 @@ export class RoomService {
     ) {
     }
 
-    public getAllRoomInformation(roomPin: string) {
-        return this._roomRepository.getAllRoomInformation(roomPin);
+    public async getRoomById(id: number): Promise<Room>
+    {
+        const room = await this._roomRepository.findOne({ where: { id } });
+
+        if(!room) {
+            throw new NotFoundException(`Task with ID "${id}" not found`);
+        }
+
+        return room;
     }
 
-    /**
-     * Generate new pin for room
-     * 
-     * @returns string
-     */
-    public generatePin(): string
+    public async getRoomByPin(pin: string): Promise<Room>
     {
-        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        let newPin = '';
+        const room = await this._roomRepository.findOne({ where: { pin } });
 
-        newPin = '';
-        while (newPin.length < 4) {
-          const isNoL = this.__getRandomInt(2);
-          newPin += isNoL === 0 ? alphabet.charAt(this.__getRandomInt(alphabet.length)) : this.__getRandomInt(10);
+        if(!room) {
+            throw new NotFoundException(`Task with ID "${pin}" not found`);
         }
-    
-        return newPin;
+
+        return room;
+    }
+
+    public async createRoom(createRoomDto: CreateRoomDto): Promise<Room>
+    {
+        const pin = this.generatePin();
+        const name = 'Room ' + pin;
+
+        return this._roomRepository.createRoom(createRoomDto, pin, name);
     }
 
     public async changeOwner(room_id: number, owner: User)
@@ -48,8 +54,6 @@ export class RoomService {
             relations: ['users']
         });
 
-        console.log(room);
-
         if(!room.users?.length) {
             console.log('here');
             await this._roomRepository.update(room.id, { owner: null });
@@ -59,9 +63,33 @@ export class RoomService {
         }
     }
 
-    public findOne(id: number | string, options?: FindOneOptions<Room>) {
-        return this._roomRepository.findOne(id, options);
+    public async deleteRoom(id: number): Promise<void>
+    {
+        const result = await this._roomRepository.delete(id);
+
+        if(result.affected === 0) {
+            throw new NotFoundException(`Room with ID "${id}" not found`);
+        }
     }
+
+    /**
+     * Generate new pin for room
+     * 
+     * @returns string
+     */
+     private generatePin(): string
+     {
+         const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+         let newPin = '';
+ 
+         newPin = '';
+         while (newPin.length < 4) {
+           const isNoL = this.__getRandomInt(2);
+           newPin += isNoL === 0 ? alphabet.charAt(this.__getRandomInt(alphabet.length)) : this.__getRandomInt(10);
+         }
+     
+         return newPin;
+     }
 
     /**
      * Get random integer

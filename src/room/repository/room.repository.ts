@@ -1,3 +1,7 @@
+import { AccessEnum, StatusEnum } from './../enums/access.enum';
+import { uuid } from 'uuidv4';
+import { CreateRoomDto } from './../dto/create-room.dto';
+import { getRoomsFilterDto } from './../dto/get-rooms-filter.dto';
 import {EntityRepository, Repository, createQueryBuilder} from "typeorm";
 import {Room} from "../entity/room.entity";
 
@@ -12,4 +16,20 @@ export class RoomRepository extends Repository<Room> {
             .getOne();
     }
     
+    public async createRoom(createRoomDto: CreateRoomDto, pin: string, name: string): Promise<Room>
+    {
+        const { owner } = createRoomDto;
+
+        const room = this.create({
+            slug: uuid(),
+            pin,
+            name,
+            owner,
+            access: AccessEnum.PRIVATE,
+            status: StatusEnum.ON
+        });
+
+        await this.save(room);
+        return room;
+    }
 }

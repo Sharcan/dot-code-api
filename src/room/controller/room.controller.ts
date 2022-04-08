@@ -1,62 +1,45 @@
-import { UserRepository } from '../../user/repository/user.repository';
+import { UserService } from './../../user/service/user.service';
+import { CreateRoomDto } from './../dto/create-room.dto';
 import { RoomService } from '../service/room.service';
-import { Controller, Post, UsePipes, ValidationPipe, Body, Patch, Param, Get, Query } from '@nestjs/common';
+import { Controller, Post, UsePipes, ValidationPipe, Body, Param, Get, Query, Delete } from '@nestjs/common';
 import { UserModel } from 'src/gateways/models/user.model';
 import { RoomClass } from 'src/room/classes/room';
 import { TeamEnum } from '../enums/team.enum';
-import { RoomDto } from "../entity/room.dto";
-import { RoomRepository } from "../repository/room.repository";
-import { InjectRepository } from "@nestjs/typeorm";
 import { Room } from '../entity/room.entity';
 
 @Controller('room')
 export class RoomController {
 
     constructor(
-        @InjectRepository(Room)
-        private readonly _roomRepository: RoomRepository,
         private readonly _roomService: RoomService,
-        private readonly _userRepository: UserRepository
-    ) {
-    }
-
-    @Get('find')
-    public findBy(@Query() query) {
-        return this._roomRepository.find({
-            where: query
-        });
-    }
-
-    @Get('find-by-pin')
-    public findByPin(@Query('pin') pin) {
-        return this._roomService.getAllRoomInformation(pin);
-    }
+        private readonly _userService: UserService
+    ) {}
 
     @Get(':id')
-    public findOne(@Param('id') id: string): Promise<Room> {
-        return this._roomRepository.findOne(id);
+    public getRoomById(@Param('id') id: number): Promise<Room> {
+        return this._roomService.getRoomById(id);
+    }
+
+    @Get('/pin/:pin')
+    public getRoomByPin(@Query('pin') pin: string): Promise<Room> {
+        return this._roomService.getRoomByPin(pin);
     }
 
     @Post()
-    @UsePipes(new ValidationPipe({ transform: true, skipMissingProperties: true }))
-    public async create(@Body() roomDto: RoomDto) {
-        // Generate pin
-        const pin = this._roomService.generatePin();
-        roomDto.pin = pin;
-        roomDto.name = 'Room ' + pin;
-
+    @UsePipes(new ValidationPipe())
+    public async createRoom(@Body() createRoomDto: CreateRoomDto): Promise<Room> {
         // Create room
-        const room = await this._roomRepository.save(roomDto);
+        const room = await this._roomService.createRoom(createRoomDto);
 
         // Update user room
-        this._userRepository.update(room.owner, { room: room.id });
+        this._userService.updateUserRoom(room.owner.id, room);
         
         return room;
     }
 
-    @Patch(':id')
-    public update(@Param('id') id: string, @Body() roomDto: RoomDto) {
-      return this._roomRepository.update(id, roomDto);
+    @Delete('/:id')
+    deleteRoom(@Param('id') id: number): Promise<void> {
+        return this._roomService.deleteRoom(id);
     }
 
     // OLD
@@ -65,22 +48,11 @@ export class RoomController {
     public rooms: RoomClass[] = [new RoomClass('123')];
 
     /**
-     * Get a room
-     * 
-     * @returns Room
-     */
-    public getRooms() 
-    {
-        console.log(this.rooms)
-        return this.rooms;
-    }
-
-    /**
      * Création à une room
      * 
      * @returns json
      */
-    public createRoom(socketId: string) 
+    public createRoom2(socketId: string) 
     {
 
         let roomExist: boolean = false;
