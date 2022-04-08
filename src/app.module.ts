@@ -21,7 +21,7 @@ import { ConfigModule } from '@nestjs/config';
       database: process.env.DB_NAME,
       entities: [__dirname + '/**/*.entity.ts', __dirname + '/**/*.entity.js'],
       migrationsRun: false,
-      logging: true,
+      logging: false,
       migrationsTableName: "migration",
       migrations: [__dirname + '/migration/**/*.ts', __dirname + '/migration/**/*.js'],
       synchronize: false,

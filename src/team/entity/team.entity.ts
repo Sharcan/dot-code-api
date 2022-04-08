@@ -5,17 +5,17 @@ import {User} from "../../user/entity/user.entity";
 @Entity()
 export class Team {
     @PrimaryGeneratedColumn()
-    id: string;
+    id: number;
 
     @Column()
     slug: string;
 
-    @ManyToOne(() => Room, (room: Room) => room.team)
+    @ManyToOne(() => Room, (room: Room) => room.teams)
     @JoinColumn({ name: 'room_id' })
-    room: string;
+    room: Room;
 
     @OneToMany(() => User, (user: User) => user.team)
-    user: number;
+    users: User[];
 
     @Column()
     name: string;

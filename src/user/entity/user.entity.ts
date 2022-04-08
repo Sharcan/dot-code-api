@@ -1,3 +1,5 @@
+import { OneToMany } from 'typeorm';
+import { Room } from './../../room/entity/room.entity';
 import {Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne} from 'typeorm';
 import {Team} from "../../team/entity/team.entity";
 
@@ -9,9 +11,13 @@ export class User {
     @Column()
     slug: string;
 
-    @ManyToOne(() => Team, (team: Team) => team.user)
+    @ManyToOne(() => Room, (room: Room) => room.users)
+    @JoinColumn({ name: 'room_id' })
+    room: Room;
+
+    @ManyToOne(() => Team, (team: Team) => team.users)
     @JoinColumn({ name: 'team_id' })
-    team: number;
+    team: Team;
 
     @Column()
     socket_id: string;

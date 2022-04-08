@@ -1,3 +1,4 @@
+import { RoomService } from 'src/room/service/room.service';
 import { Delete, ValidationPipe } from '@nestjs/common';
 import { UsePipes } from '@nestjs/common';
 import { User } from '../entity/user.entity';
@@ -11,8 +12,9 @@ import * as bcrypt from 'bcrypt';
 export class UserController {
 
     constructor(
-        @InjectRepository(UserRepository) 
-        private readonly _userRepository: UserRepository
+        @InjectRepository(UserRepository)
+        private readonly _userRepository: UserRepository,
+        private readonly _roomService: RoomService
     ) {
     }
 
@@ -33,11 +35,48 @@ export class UserController {
 
     @Patch(':id')
     update(@Param('id') id: string, @Body() userDto: UserDto) {
-      return this._userRepository.update(id, userDto);
+        return this._userRepository.update(id, userDto);
     }
 
     @Delete(':id')
     delete(@Param('id') id: string) {
         return this._userRepository.delete(id);
+    }
+
+    /**
+     * Connect user to a room
+     * 
+     * @param id 
+     * @param room_id 
+     */
+    @Patch(':id/connect')
+    connect(@Param('id') id: string, @Body() userDto: UserDto) {
+        if(!userDto.room) {
+            return false;
+        }
+        
+        this._userRepository.update(id, { room: userDto.room });
+    }
+
+    /**
+     * Disonnect user from any room
+     * 
+     * @param id
+     */
+    @Patch(':id/disconnect')
+    async disconnect(@Param('id') id: string) {
+        // Get user
+        const user = await this._userRepository.findOne(id, {
+            relations: ['room']
+        });
+        if(!user || !user.room) {
+            return false;
+        }
+
+        // Disconnect user from room
+        this._userRepository.update(id, { room: null });
+
+        // Get room and update owner
+        this._roomService.changeOwnerRandom(user.room.id);
     }
 }

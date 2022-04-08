@@ -1,6 +1,6 @@
 import { UserRepository } from './../../user/repository/user.repository';
 import { RoomService } from './../service/room.service';
-import { Controller, Post, UsePipes, ValidationPipe, Body, Patch, Param, Get, Query } from '@nestjs/common';
+import { Controller, Post, UsePipes, ValidationPipe, Body, Patch, Param, Get, Query, Logger } from '@nestjs/common';
 import { UserModel } from 'src/gateways/models/user.model';
 import { RoomClass } from 'src/room/classes/room';
 import { TeamEnum } from '../enums/team.enum';
@@ -45,7 +45,13 @@ export class RoomController {
         roomDto.pin = pin;
         roomDto.name = 'Room ' + pin;
 
-        return this._roomRepository.save(roomDto);
+        // Create room
+        const room = await this._roomRepository.save(roomDto);
+
+        // Update user room
+        this._userRepository.update(room.owner, { room: room.id });
+        
+        return room;
     }
 
     @Patch(':id')

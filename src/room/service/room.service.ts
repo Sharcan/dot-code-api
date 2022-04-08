@@ -1,6 +1,10 @@
+import { User } from './../../user/entity/user.entity';
+import { Room } from './../entity/room.entity';
+import { RoomDto } from './../entity/room.dto';
 import { Injectable } from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {RoomRepository} from "../repository/room.repository";
+import { FindOneOptions } from 'typeorm';
 
 @Injectable()
 export class RoomService {
@@ -31,6 +35,32 @@ export class RoomService {
         }
     
         return newPin;
+    }
+
+    public async changeOwner(room_id: number, owner: User)
+    {
+        this._roomRepository.update(room_id, { owner: owner });
+    }
+
+    public async changeOwnerRandom(room_id: number)
+    {
+        const room = await this._roomRepository.findOne(room_id, {
+            relations: ['users']
+        });
+
+        console.log(room);
+
+        if(!room.users?.length) {
+            console.log('here');
+            await this._roomRepository.update(room.id, { owner: null });
+        } else {
+            const owner = room.users[Math.floor(Math.random() * room.users.length)];
+            await this._roomRepository.update(room.id, { owner: owner });
+        }
+    }
+
+    public findOne(id: number | string, options?: FindOneOptions<Room>) {
+        return this._roomRepository.findOne(id, options);
     }
 
     /**

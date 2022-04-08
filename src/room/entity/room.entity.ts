@@ -8,18 +8,21 @@ import {Team} from "../../team/entity/team.entity";
 @Entity()
 export class Room {
     @PrimaryGeneratedColumn()
-    id: string;
+    id: number;
 
     @OneToOne(() => User)
     @JoinColumn({ name: 'owner_id' })
-    owner: number
+    owner: User
 
     @OneToOne(() => Game)
     @JoinColumn({ name: 'game_id' })
-    game: number
+    game: Game
 
-    @OneToMany(() => Team, (team) => team.room)
-    team: number
+    @OneToMany(() => Team, (team: Team) => team.room)
+    teams: Team[]
+
+    @OneToMany(() => User, (user: User) => user.room)
+    users: User[]
 
     @Column()
     slug: string

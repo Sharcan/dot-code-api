@@ -6,9 +6,9 @@ export class UserDto {
     @IsString()
     public slug: string = uuid();
 
-    // @IsNumber()
-    // @IsOptional()
-    // public readonly room: number;
+    @IsNumber()
+    @IsOptional()
+    public readonly room: number;
 
     @IsNumber()
     @IsOptional()

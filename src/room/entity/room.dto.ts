@@ -1,5 +1,5 @@
 import { uuid } from 'uuidv4';
-import { IsOptional, IsString, IsEnum } from 'class-validator';
+import { IsOptional, IsString, IsEnum, IsArray } from 'class-validator';
 import { IsNotEmpty } from 'class-validator';
 import {ModeEnum} from "../enums/mode.enum";
 import {AccessEnum, StatusEnum} from "../enums/access.enum";
@@ -11,6 +11,10 @@ export class RoomDto {
 
     @IsOptional()
     public owner;
+
+    @IsArray()
+    @IsOptional()
+    public users;
 
     @IsOptional()
     public game: number;
