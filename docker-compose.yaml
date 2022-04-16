@@ -35,7 +35,12 @@ services:
       context: .
       target: production
     command: npm run start:prod
+    environment:
+      - DB_PORT=5432
     ports:
       - '${APP_PORT}:${APP_PORT}'
     volumes:
       - .:/usr/src/app
+      - /usr/src/app/node_modules/
+    depends_on:
+      - db
